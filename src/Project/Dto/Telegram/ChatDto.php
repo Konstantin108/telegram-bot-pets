@@ -20,7 +20,7 @@ class ChatDto implements DtoInterface
      * @param string $username
      * @param string $type
      */
-    public function __construct(int $id, string $firstName, string $lastName, string $username, string $type)
+    private function __construct(int $id, string $firstName, string $lastName, string $username, string $type)
     {
         $this->id = $id;
         $this->firstName = $firstName;

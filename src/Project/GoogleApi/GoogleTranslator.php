@@ -21,6 +21,7 @@ class GoogleTranslator
         ];
     }
 
+    //TODO переработать, возможно добавить Dto
     /**
      * @param string $text
      * @return mixed

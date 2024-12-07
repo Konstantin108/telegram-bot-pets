@@ -27,7 +27,7 @@ class UserController
     public function writeUserDataToDB(MessageDto $messageDto): void
     {
         try {
-            if (!$user = User::where("chat_id", $messageDto->from->id)) {
+            if (is_null($user = User::where("chat_id", $messageDto->from->id))) {
                 $user = new User();
                 $user->setChatId($messageDto->from->id);
             }

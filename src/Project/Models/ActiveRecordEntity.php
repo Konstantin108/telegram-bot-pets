@@ -3,6 +3,7 @@
 namespace Project\Models;
 
 use Error;
+use Project\Dto\DB\ScopeParamDto;
 use Project\Exceptions\AccessModifiersException;
 use Project\Exceptions\DbException;
 use Project\Scopes\ScopeInterface;
@@ -68,10 +69,10 @@ abstract class ActiveRecordEntity
         $values = [];
         if (count($scopes) > 0) {
             foreach ($scopes as $scope) {
-                foreach ($scope() as $key => $value) {
-                    [$operator, $fieldName] = explode("|", $key);
-                    $filter .= " AND `$fieldName` $operator :$fieldName";
-                    $values[$fieldName] = $value;
+                /** @var ScopeParamDto $paramDto */
+                foreach ($scope() as $paramDto) {
+                    $filter .= " AND `$paramDto->column` $paramDto->operator :$paramDto->column";
+                    $values[$paramDto->column] = $paramDto->value;
                 }
             }
         }
@@ -136,7 +137,7 @@ abstract class ActiveRecordEntity
         $values = [];
         $columns = [];
         foreach ($this as $fieldName => $value) {
-            if (!$value) continue;
+            if (is_null($value)) continue;
             $fieldName = $this->camelCaseToUnderscore($fieldName);
             $fields[] = ":$fieldName";
             $values[$fieldName] = $value;

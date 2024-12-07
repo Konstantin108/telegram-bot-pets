@@ -18,7 +18,7 @@ class TelegramResponse extends Response
      */
     public function body(): ?MessageDto
     {
-        if ($this->data) {
+        if (!is_null($this->data)) {
             return MessageDto::fromArray($this->data);
         }
         return null;

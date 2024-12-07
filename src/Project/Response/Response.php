@@ -9,7 +9,7 @@ class Response
     public function __construct()
     {
 //        $this->data = json_decode(file_get_contents("../../bots/pets/msg2.json"), true);
-        if ($input = file_get_contents("php://input")) {
+        if (!is_null($input = file_get_contents("php://input"))) {
             $this->data = json_decode($input, true);
         }
     }

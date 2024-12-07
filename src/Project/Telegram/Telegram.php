@@ -11,6 +11,7 @@ use Project\Services\Conn;
 
 class Telegram
 {
+    private const int BOT_WAS_BLOCKED = 403;
     private string $url;
     private string $token;
 

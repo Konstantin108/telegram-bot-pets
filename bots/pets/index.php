@@ -101,9 +101,7 @@ try {
         }
     } else {
         // массовое уведомление
-        if ($users = User::filter(new MembersWithNotificationScope())) {
-            echo "<pre>";
-            var_dump($users);
+        if (count($users = User::filter(new MembersWithNotificationScope())) > 0) {
             $dailyPhotoData = getImageForDailyNotification($allowExtensionsArray, $cats);
             foreach ($users as $user) {
                 $dailyNotifyMessage = "Скучаешь, {$user->getFirstName()} {$user->getLastName()}? Вот полюбуйся!";

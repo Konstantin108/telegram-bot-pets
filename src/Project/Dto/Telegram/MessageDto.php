@@ -27,7 +27,7 @@ class MessageDto implements DtoInterface
      * @param UserStatusEnum $status
      * @param string|null $chatInstance
      */
-    public function __construct(
+    private function __construct(
         ?int           $messageId,
         ?string        $callbackId,
         FromDto        $from,
@@ -62,7 +62,7 @@ class MessageDto implements DtoInterface
             "date" => $this->date,
             "text" => $this->text,
             "status" => $this->status->value,
-            "chat_instance" => $this->chatInstance,
+            "chat_instance" => $this->chatInstance
         ];
     }
 

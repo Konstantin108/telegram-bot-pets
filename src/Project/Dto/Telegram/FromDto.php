@@ -22,7 +22,7 @@ class FromDto implements DtoInterface
      * @param string $username
      * @param string|null $languageCode
      */
-    public function __construct(
+    private function __construct(
         int         $id,
         bool|null   $isBot,
         string      $firstName,
@@ -51,7 +51,7 @@ class FromDto implements DtoInterface
             "firstName" => $this->firstName,
             "lastName" => $this->lastName,
             "username" => $this->username,
-            "languageCode" => $this->languageCode,
+            "languageCode" => $this->languageCode
         ];
     }
 
