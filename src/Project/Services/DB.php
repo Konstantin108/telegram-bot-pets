@@ -6,7 +6,6 @@ use JetBrains\PhpStorm\ArrayShape;
 use Project\Exceptions\DbException;
 use PDOException;
 use PDOStatement;
-
 use PDO;
 
 class DB
@@ -18,6 +17,34 @@ class DB
     private function __construct()
     {
         $this->config = (require __DIR__ . "/../../config.php")["bots"]["pets"]["db"];
+    }
+
+    /**
+     * @param string $sql
+     * @param array $params
+     * @param string $className
+     * @return array|false|null
+     * @throws DbException
+     */
+    public function query(string $sql, array $params = [], string $className = "stdClass"): bool|array|null
+    {
+        try {
+            $PDOStatement = $this->exec($sql, $params);
+            return $PDOStatement
+                ? $PDOStatement->fetchAll(PDO::FETCH_CLASS, $className)
+                : null;
+        } catch (PDOException $e) {
+            throw new DbException($e->getMessage());
+        }
+    }
+
+    /**
+     * @return bool|string
+     * @throws DbException
+     */
+    public function getLastInsertId(): bool|string
+    {
+        return $this->getConnection()->lastInsertId();
     }
 
     /**
@@ -89,33 +116,5 @@ class DB
         return $PDOStatement->execute($params)
             ? $PDOStatement
             : null;
-    }
-
-    /**
-     * @param string $sql
-     * @param array $params
-     * @param string $className
-     * @return array|false|null
-     * @throws DbException
-     */
-    public function query(string $sql, array $params = [], string $className = "stdClass"): bool|array|null
-    {
-        try {
-            $PDOStatement = $this->exec($sql, $params);
-            return $PDOStatement
-                ? $PDOStatement->fetchAll(PDO::FETCH_CLASS, $className)
-                : null;
-        } catch (PDOException $e) {
-            throw new DbException($e->getMessage());
-        }
-    }
-
-    /**
-     * @return bool|string
-     * @throws DbException
-     */
-    public function getLastInsertId(): bool|string
-    {
-        return $this->getConnection()->lastInsertId();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Project\Logger;
 
+use Project\Dto\DtoInterface;
 use stdClass;
 
 class Logger
@@ -20,6 +21,14 @@ class Logger
     }
 
     /**
+     * @return Logger
+     */
+    public static function create(): Logger
+    {
+        return new self();
+    }
+
+    /**
      * @param string $data
      * @return void
      */
@@ -31,28 +40,37 @@ class Logger
     }
 
     /**
-     * @param string|array|stdClass $data
+     * @param string|array|stdClass|DtoInterface $data
+     * @param string|null $path
      * @param bool $formatWithDate
      * @return void
      */
-    public function debug(string|array|stdClass $data, bool $formatWithDate = false): void
+    public function debug(
+        string|array|stdClass|DtoInterface $data,
+        ?string                            $path = null,
+        bool                               $formatWithDate = false
+    ): void
     {
-        $this->write($data, $formatWithDate, $this->debugLogFile);
+        $this->write($data, $formatWithDate, $path ?? $this->debugLogFile);
     }
 
     /**
-     * @param string|array|stdClass $data
+     * @param string|array|stdClass|DtoInterface $data
      * @param bool $formatWithDate
      * @param string $path
      * @return void
      */
-    private function write(string|array|stdClass $data, bool $formatWithDate, string $path): void
+    private function write(
+        string|array|stdClass|DtoInterface $data,
+        bool                               $formatWithDate,
+        string                             $path
+    ): void
     {
-        if(!is_string($data)){
+        if (!is_string($data)) {
             $data = print_r($data, true);
         }
 
-        if($formatWithDate){
+        if ($formatWithDate) {
             $data = PHP_EOL
                 . "------------------------------ "
                 . date("Y-m-d H:i:s")
@@ -63,13 +81,5 @@ class Logger
         }
 
         error_log($data, 3, $path);
-    }
-
-    /**
-     * @return Logger
-     */
-    public static function create(): Logger
-    {
-        return new self();
     }
 }

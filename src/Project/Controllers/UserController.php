@@ -2,11 +2,12 @@
 
 namespace Project\Controllers;
 
+use Project\Dto\Telegram\FromDto;
+use Project\Dto\Telegram\MessageDto;
 use Project\Enums\User\UserStatusEnum;
 use Project\Exceptions\DbException;
 use Project\Exceptions\TypeErrorException;
 use Project\Models\Users\User;
-use stdClass;
 use TypeError;
 
 class UserController
@@ -19,25 +20,24 @@ class UserController
     }
 
     /**
-     * @param stdClass $from
-     * @param UserStatusEnum $status
+     * @param MessageDto $messageDto
      * @return void
      * @throws TypeErrorException
      */
-    public function writeUserDataToDB(stdClass $from, UserStatusEnum $status): void
+    public function writeUserDataToDB(MessageDto $messageDto): void
     {
         try {
-            if (!$user = User::where("chat_id", $from->id)) {
+            if (!$user = User::where("chat_id", $messageDto->from->id)) {
                 $user = new User();
-                $user->setChatId($from->id);
+                $user->setChatId($messageDto->from->id);
             }
-            $user->setIsBot($from->is_bot);
-            $user->setFirstName($from->first_name);
-            $user->setLastName($from->last_name);
-            $user->setUsername($from->username);
-            $user->setIsAdmin(in_array($from->id, $this->adminChatIds));
-            $user->setStatus($status);
-            $user->setLanguageCode($from->language_code);
+            $user->setIsBot($messageDto->from->isBot);
+            $user->setFirstName($messageDto->from->firstName);
+            $user->setLastName($messageDto->from->lastName);
+            $user->setUsername($messageDto->from->username);
+            $user->setIsAdmin(in_array($messageDto->from->id, $this->adminChatIds));
+            $user->setStatus($messageDto->status);
+            $user->setLanguageCode($messageDto->from->languageCode);
 
             $user->save();
 

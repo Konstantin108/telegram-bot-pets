@@ -28,19 +28,19 @@ $keyboard = [
     "resize_keyboard" => true
 ];
 
-$inputData = file_get_contents("php://input");
+$response = file_get_contents("php://input");
 
-if (!$inputData = json_decode($inputData, true)) return;
+if (!$response = json_decode($response, true)) return;
 
 try {
-    $inputData = $inputData["message"];
+    $response = $response["message"];
 
-    $from = (object)$inputData["from"];
-    $text = $inputData["text"];
+    $from = (object)$response["from"];
+    $text = $response["text"];
 
     if (!$text) return;
 
-    $text = trim(mb_strtolower($text));
+    $text = mb_strtolower($text);
 
     switch ($text) {
         case "/start":

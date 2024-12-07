@@ -4,11 +4,13 @@ ini_set("display_startup_errors", 1);
 error_reporting(E_ALL);
 
 use JetBrains\PhpStorm\ArrayShape;
-use Project\Enums\User\UserStatusEnum;
+use Project\Dto\Telegram\FromDto;
+use Project\Dto\Telegram\MessageDto;
 use Project\Exceptions\TypeErrorException;
 use Project\Exceptions\ConnException;
 use Project\Exceptions\DbException;
 use Project\Controllers\UserController;
+use Project\Response\TelegramResponse;
 use Project\Scopes\MembersWithNotificationScope;
 use Project\Telegram\Telegram;
 use Project\Models\Users\User;
@@ -24,7 +26,6 @@ $config = (include __DIR__ . "/../../src/config.php")["bots"]["pets"];
 $allowExtensionsArray = $config["allowExtensionsArray"];
 $cats = $config["cats"];
 $token = $config["token"];
-$text = "";
 $from = null;
 
 $telegram = new Telegram($token);
@@ -44,54 +45,43 @@ $defaultKeyboard = [
     "resize_keyboard" => true
 ];
 
-$inputData = file_get_contents("php://input");
-//TODO использовать new Response
+/** @var MessageDto $response */
+$response = (new TelegramResponse())->body();
 
 try {
-    if ($inputData = json_decode($inputData, true)) {
-
-        $inputData = $inputData["message"] ?? $inputData["callback_query"] ?? $inputData["my_chat_member"];
-
-        $from = (object)$inputData["from"];
-        $text = $inputData["text"] ?? $inputData["data"];
-        $status = UserStatusEnum::MEMBER;
-
-        if (!empty($inputData["new_chat_member"])) {
-            $status = UserStatusEnum::from($inputData["new_chat_member"]["status"]);
-        }
+    if (!is_null($response)) {
+        //TODO так быть не должно надо выносить в методы
+        $from = $response->from;
 
         try {
-            (new UserController())->writeUserDataToDB($from, $status);
+            (new UserController())->writeUserDataToDB($response);
         } catch (TypeErrorException $e) {
             $e->showError();
         }
 
-        if (!$text) return;
+        if (is_null($response->text)) return;
 
-        $text = trim(mb_strtolower($text));
-
-        switch ($text) {
+        switch ($response->text) {
             //TODO возможно вынести названия действий в константы
             case "/start":
-                $telegram->sendMessage("Бот активирован", $from->id, json_encode($defaultKeyboard));
+                $telegram->sendMessage("Бот активирован", $response->from->id, json_encode($defaultKeyboard));
                 break;
             case "обо мне":
-                aboutBot($from->id, $telegram, $defaultKeyboard);
+                aboutBot($response->from->id, $telegram, $defaultKeyboard);
                 break;
             case "список команд":
-                commandsList($from, $telegram, $defaultKeyboard);
+                commandsList($response->from, $telegram, $defaultKeyboard);
                 break;
             case "курага":
             case "ватсон":
             case "василиса":
-                $telegram->sendChatAction($from->id, "upload_photo");
-                $photoData = getRandomPhoto($cats[$text]["en_nom"], $allowExtensionsArray);
-                showCatImage($from->id, $telegram, $photoData);
+                $telegram->sendChatAction($response->from->id, "upload_photo");
+                $photoData = getRandomPhoto($cats[$response->text]["en_nom"], $allowExtensionsArray);
+                showCatImage($response->from->id, $telegram, $photoData);
 
-                if (!in_array($from->id, $config["adminChatIds"])) {
+                if (!in_array($response->from->id, $config["adminChatIds"])) {
                     foreach ($config["adminChatIds"] as $oneAdminChatId) {
-
-                        $notifyForAdmin = "$from->first_name $from->last_name сейчас любуется {$cats[$text]["ru_ins"]}"
+                        $notifyForAdmin = "$from->firstName $from->lastName сейчас любуется {$cats[$response->text]["ru_ins"]}"
                             . "\nПоказано это замечательное фото 🤩";
 
                         $telegram->sendMessage($notifyForAdmin, $oneAdminChatId, json_encode($defaultKeyboard));
@@ -102,8 +92,8 @@ try {
             // callback действия
             case "like":
             case "unlike":
-                sendReaction($text, $telegram, $inputData["id"]);
-                sendReactionToAdmin($text, $from, $telegram, $config, $defaultKeyboard);
+                sendReaction($response->text, $telegram, $response->callbackId);
+                sendReactionToAdmin($response->text, $from, $telegram, $config, $defaultKeyboard);
                 break;
             default:
                 $telegram->sendMessage("Используй кнопки с командами", $from->id, json_encode($defaultKeyboard));
@@ -111,10 +101,11 @@ try {
         }
     } else {
         // массовое уведомление
-        if ($users = User::all(new MembersWithNotificationScope())) {
+        if ($users = User::filter(new MembersWithNotificationScope())) {
+            echo "<pre>";
+            var_dump($users);
             $dailyPhotoData = getImageForDailyNotification($allowExtensionsArray, $cats);
             foreach ($users as $user) {
-                /** @var User $user */
                 $dailyNotifyMessage = "Скучаешь, {$user->getFirstName()} {$user->getLastName()}? Вот полюбуйся!";
                 $telegram->sendMessage($dailyNotifyMessage, $user->getChatId(), json_encode($defaultKeyboard));
                 showCatImage($user->getChatId(), $telegram, $dailyPhotoData);
@@ -140,15 +131,15 @@ function aboutBot(string $chatId, Telegram $telegram, array $replyMarkup): void
 }
 
 /**
- * @param stdClass $from
+ * @param FromDto $from
  * @param Telegram $telegram
  * @param array $replyMarkup
  * @return void
  * @throws ConnException
  */
-function commandsList(stdClass $from, Telegram $telegram, array $replyMarkup): void
+function commandsList(FromDto $from, Telegram $telegram, array $replyMarkup): void
 {
-    $text = "Привет, $from->first_name $from->last_name, вот команды, что я понимаю:"
+    $text = "Привет, $from->firstName $from->lastName, вот команды, что я понимаю:"
         . "\n<b><i>Обо мне</i></b> - информация обо мне"
         . "\n<b><i>Список команд</i></b> - что я умею"
         . "\n<b><i>Курага</i></b> - показать фото Кураги"
@@ -228,14 +219,14 @@ function sendReaction(string $text, Telegram $telegram, string $callbackQueryId)
 
 /**
  * @param string $text
- * @param stdClass $from
+ * @param FromDto $from
  * @param Telegram $telegram
  * @param array $config
  * @param array $defaultKeyboard
  * @return void
  * @throws ConnException
  */
-function sendReactionToAdmin(string $text, stdClass $from, Telegram $telegram, array $config, array $defaultKeyboard): void
+function sendReactionToAdmin(string $text, FromDto $from, Telegram $telegram, array $config, array $defaultKeyboard): void
 {
     $reactions = [
         "like" => "ставит 👍 показаному фото",
@@ -244,7 +235,7 @@ function sendReactionToAdmin(string $text, stdClass $from, Telegram $telegram, a
 
     if (!in_array($from->id, $config["adminChatIds"])) {
         foreach ($config["adminChatIds"] as $oneAdminChatId) {
-            $notifyForAdmin = "$from->first_name $from->last_name $reactions[$text]";
+            $notifyForAdmin = "$from->firstName $from->lastName $reactions[$text]";
             $telegram->sendMessage($notifyForAdmin, $oneAdminChatId, json_encode($defaultKeyboard));
         }
     }

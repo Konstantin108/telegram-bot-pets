@@ -1,0 +1,85 @@
+{
+  "update_id": 734847883,
+  "callback_query": {
+    "id": "2361601045838514766",
+    "from": {
+      "id": 549853091,
+      "is_bot": false,
+      "first_name": "\u041a\u043e\u0441\u0442\u044f",
+      "last_name": "\u0414\u0440\u044f\u0445\u043b\u043e\u0432",
+      "username": "kpstya",
+      "language_code": "ru"
+    },
+    "message": {
+      "message_id": 24347,
+      "from": {
+        "id": 5803758528,
+        "is_bot": true,
+        "first_name": "\u041b\u044e\u0431\u0438\u043c\u0446\u044b",
+        "username": "my_best_pets_bot"
+      },
+      "chat": {
+        "id": 549853091,
+        "first_name": "\u041a\u043e\u0441\u0442\u044f",
+        "last_name": "\u0414\u0440\u044f\u0445\u043b\u043e\u0432",
+        "username": "kpstya",
+        "type": "private"
+      },
+      "date": 1733582640,
+      "photo": [
+        {
+          "file_id": "AgACAgIAAxkDAAJfG2dUXzA4l9xZSK0G063mRlEBXI-sAAL16TEbdJGpSivXxtals63YAQADAgADcwADNgQ",
+          "file_unique_id": "AQAD9ekxG3SRqUp4",
+          "file_size": 1468,
+          "width": 90,
+          "height": 67
+        },
+        {
+          "file_id": "AgACAgIAAxkDAAJfG2dUXzA4l9xZSK0G063mRlEBXI-sAAL16TEbdJGpSivXxtals63YAQADAgADbQADNgQ",
+          "file_unique_id": "AQAD9ekxG3SRqUpy",
+          "file_size": 22307,
+          "width": 320,
+          "height": 240
+        },
+        {
+          "file_id": "AgACAgIAAxkDAAJfG2dUXzA4l9xZSK0G063mRlEBXI-sAAL16TEbdJGpSivXxtals63YAQADAgADeAADNgQ",
+          "file_unique_id": "AQAD9ekxG3SRqUp9",
+          "file_size": 113724,
+          "width": 800,
+          "height": 600
+        },
+        {
+          "file_id": "AgACAgIAAxkDAAJfG2dUXzA4l9xZSK0G063mRlEBXI-sAAL16TEbdJGpSivXxtals63YAQADAgADeQADNgQ",
+          "file_unique_id": "AQAD9ekxG3SRqUp-",
+          "file_size": 277229,
+          "width": 1280,
+          "height": 960
+        },
+        {
+          "file_id": "AgACAgIAAxkDAAJfG2dUXzA4l9xZSK0G063mRlEBXI-sAAL16TEbdJGpSivXxtals63YAQADAgADdwADNgQ",
+          "file_unique_id": "AQAD9ekxG3SRqUp8",
+          "file_size": 317716,
+          "width": 1344,
+          "height": 1008
+        }
+      ],
+      "caption": "2019\u0433. \u043e\u043a\u0442\u044f\u0431\u0440\u044c",
+      "reply_markup": {
+        "inline_keyboard": [
+          [
+            {
+              "text": "\ud83d\udc4d",
+              "callback_data": "like"
+            },
+            {
+              "text": "\ud83d\udc4e",
+              "callback_data": "unlike"
+            }
+          ]
+        ]
+      }
+    },
+    "chat_instance": "5715544046799762191",
+    "data": "like"
+  }
+}

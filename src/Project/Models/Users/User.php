@@ -18,11 +18,6 @@ class User extends ActiveRecordEntity
     protected string|null $languageCode;
     protected string|null $createdAt;
 
-    protected static function getTableName(): string
-    {
-        return "users";
-    }
-
     /**
      * @param string $chatId
      */
@@ -109,5 +104,10 @@ class User extends ActiveRecordEntity
     public function getLastName(): ?string
     {
         return $this->lastName;
+    }
+
+    protected static function getTableName(): string
+    {
+        return "users";
     }
 }

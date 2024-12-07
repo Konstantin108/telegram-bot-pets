@@ -30,24 +30,6 @@ abstract class ActiveRecordEntity
     }
 
     /**
-     * @param string $name
-     * @return string
-     */
-    private function underscoreToCamelCase(string $name): string
-    {
-        return lcfirst(str_replace("_", "", ucwords($name, "_")));
-    }
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    private function camelCaseToUnderscore(string $name): string
-    {
-        return strtolower(preg_replace("/(?<!^)[A-Z]/", "_$0", $name));
-    }
-
-    /**
      * @param string $param
      * @param string $value
      * @return mixed|null
@@ -76,28 +58,33 @@ abstract class ActiveRecordEntity
     }
 
     /**
-     * @param ScopeInterface|null $filterArray
+     * @param ScopeInterface ...$scopes
      * @return array|bool|null
      * @throws DbException
      */
-    public static function all(ScopeInterface $filterArray = null): bool|array|null
+    public static function filter(ScopeInterface ...$scopes): bool|array|null
     {
         $filter = "";
         $values = [];
-        if ($filterArray) {
-            foreach ($filterArray() as $key => $value) {
-                //TODO вынести построение фильтра в отдельный метод
-                [$operator, $fieldName] = explode("|", $key);
-                $filter .= " AND `$fieldName` $operator :$fieldName";
-                $values[$fieldName] = $value;
+        if (count($scopes) > 0) {
+            foreach ($scopes as $scope) {
+                foreach ($scope() as $key => $value) {
+                    [$operator, $fieldName] = explode("|", $key);
+                    $filter .= " AND `$fieldName` $operator :$fieldName";
+                    $values[$fieldName] = $value;
+                }
             }
         }
 
-        return static::getDB()->query(
-            "/** @lang text */SELECT * FROM `" . static::getTableName() . "` WHERE 1=1$filter;",
-            $values,
-            static::class
-        );
+        return static::list($filter, $values);
+    }
+
+    /**
+     * @throws DbException
+     */
+    public static function all(): bool|array|null
+    {
+        return static::list();
     }
 
     /**
@@ -109,6 +96,34 @@ abstract class ActiveRecordEntity
         empty($this->id)
             ? $this->insert()
             : $this->update();
+    }
+
+    /**
+     * @return string
+     */
+    abstract protected static function getTableName(): string;
+
+    /**
+     * @return DB
+     */
+    protected static function getDB(): DB
+    {
+        return DB::getInstance();
+    }
+
+    /**
+     * @param string $filter
+     * @param array $values
+     * @return array|bool|null
+     * @throws DbException
+     */
+    private static function list(string $filter = "", array $values = []): bool|array|null
+    {
+        return static::getDB()->query(
+            "/** @lang text */SELECT * FROM `" . static::getTableName() . "` WHERE 1=1$filter;",
+            $values,
+            static::class
+        );
     }
 
     /**
@@ -173,15 +188,20 @@ abstract class ActiveRecordEntity
     }
 
     /**
+     * @param string $name
      * @return string
      */
-    abstract protected static function getTableName(): string;
+    private function underscoreToCamelCase(string $name): string
+    {
+        return lcfirst(str_replace("_", "", ucwords($name, "_")));
+    }
 
     /**
-     * @return DB
+     * @param string $name
+     * @return string
      */
-    protected static function getDB(): DB
+    private function camelCaseToUnderscore(string $name): string
     {
-        return DB::getInstance();
+        return strtolower(preg_replace("/(?<!^)[A-Z]/", "_$0", $name));
     }
 }
