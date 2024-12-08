@@ -1,8 +1,8 @@
 <?php
 
-namespace Project\Response;
+namespace Project\Request;
 
-class Response
+class Request
 {
     protected array|null $data = null;
 

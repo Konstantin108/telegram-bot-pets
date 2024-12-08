@@ -38,6 +38,7 @@ class Conn
             throw new ConnException("Ошибка в URL");
         }
 
+        //TODO отдавать массив потом преобразовать в Dto
         return json_decode($result);
     }
 

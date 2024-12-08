@@ -33,6 +33,7 @@ class Telegram
      */
     public function sendMessage(string $text, string $chatId, string $replyMarkup = ""): void
     {
+        //TODO нужно использовать Dto
         $data = [
             "chat_id" => $chatId,
             "text" => $text,
@@ -108,6 +109,12 @@ class Telegram
                     "messageData" => $data,
                     "method" => $method
                 ];
+
+                if ($response->error_code === self::BOT_WAS_BLOCKED) {
+                    $user = User::where("chat_id", $data["chat_id"]);
+                    $user->setStatus(UserStatusEnum::KICKED);
+                    $user->save();
+                }
 
                 throw new TelegramException(print_r($logData, true));
             }
