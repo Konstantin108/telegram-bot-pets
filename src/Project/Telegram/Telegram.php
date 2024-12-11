@@ -2,6 +2,7 @@
 
 namespace Project\Telegram;
 
+use Project\Dto\Telegram\ResponseDto;
 use Project\Enums\User\UserStatusEnum;
 use Project\Exceptions\ConnException;
 use Project\Exceptions\DbException;
@@ -11,7 +12,6 @@ use Project\Services\Conn;
 
 class Telegram
 {
-    private const int BOT_WAS_BLOCKED = 403;
     private string $url;
     private string $token;
 
@@ -102,15 +102,16 @@ class Telegram
     {
         try {
             $url = $this->url . $this->token . $method;
-            $response = (new Conn($url))->getResult($data, "post");
-            if (empty($response->result)) {
+            $responseDto = ResponseDto::fromArray((new Conn($url))->getResult($data, "post"));
+            if (!is_null($responseDto->errorCode)) {
+                //TODO тут тоже нужно Dto
                 $logData = [
-                    "error" => $response,
+                    "error" => $responseDto,
                     "messageData" => $data,
                     "method" => $method
                 ];
 
-                if ($response->error_code === self::BOT_WAS_BLOCKED) {
+                if ($responseDto->errorCode->isBlocked()) {
                     $user = User::where("chat_id", $data["chat_id"]);
                     $user->setStatus(UserStatusEnum::KICKED);
                     $user->save();

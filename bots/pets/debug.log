@@ -1,0 +1,33 @@
+Project\Dto\Telegram\MessageDto Object
+(
+    [messageId] => 24798
+    [callbackId] => 
+    [from] => Project\Dto\Telegram\FromDto Object
+        (
+            [id] => 549853091
+            [isBot] => 
+            [firstName] => Костя
+            [lastName] => Дряхлов
+            [username] => kpstya
+            [languageCode] => ru
+        )
+
+    [chat] => Project\Dto\Telegram\ChatDto Object
+        (
+            [id] => 549853091
+            [firstName] => Костя
+            [lastName] => Дряхлов
+            [username] => kpstya
+            [type] => private
+        )
+
+    [date] => 1733950662
+    [text] => курага
+    [status] => Project\Enums\User\UserStatusEnum Enum:string
+        (
+            [name] => MEMBER
+            [value] => member
+        )
+
+    [chatInstance] => 
+)

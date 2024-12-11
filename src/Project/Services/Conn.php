@@ -23,7 +23,7 @@ class Conn
     /**
      * @param array $query
      * @param string $method
-     * @return bool|mixed|string
+     * @return mixed
      * @throws ConnException
      */
     public function getResult(array $query, string $method): mixed
@@ -38,8 +38,7 @@ class Conn
             throw new ConnException("Ошибка в URL");
         }
 
-        //TODO отдавать массив потом преобразовать в Dto
-        return json_decode($result);
+        return json_decode($result, true);
     }
 
     /**

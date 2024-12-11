@@ -6,11 +6,6 @@ use Project\Dto\Telegram\MessageDto;
 
 class TelegramRequest extends Request
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     //TODO так же надо сделать с ответами от GoogleApi
     // работа с массивом только в Request - далее будут классы и дто
     /**
