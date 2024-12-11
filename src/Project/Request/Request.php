@@ -8,7 +8,7 @@ class Request
 
     public function __construct()
     {
-//        $this->data = json_decode(file_get_contents("../../bots/pets/msg2.json"), true);
+//        $this->data = json_decode(file_get_contents("../../bots/pets/msg.json"), true);
         if (!is_null($input = file_get_contents("php://input"))) {
             $this->data = json_decode($input, true);
         }
