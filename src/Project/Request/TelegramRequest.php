@@ -1,18 +1,13 @@
 <?php
 
-namespace Project\Response;
+namespace Project\Request;
 
 use Project\Dto\Telegram\MessageDto;
 
-class TelegramResponse extends Response
+class TelegramRequest extends Request
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     //TODO так же надо сделать с ответами от GoogleApi
-    // работа с массивом только в Response - далее будут классы и дто
+    // работа с массивом только в Request - далее будут классы и дто
     /**
      * @return MessageDto|null
      */

@@ -28,15 +28,15 @@ $keyboard = [
     "resize_keyboard" => true
 ];
 
-$response = file_get_contents("php://input");
+$request = file_get_contents("php://input");
 
-if (!$response = json_decode($response, true)) return;
+if (is_null($request = json_decode($request, true))) return;
 
 try {
-    $response = $response["message"];
+    $request = $request["message"];
 
-    $from = (object)$response["from"];
-    $text = $response["text"];
+    $from = (object)$request["from"];
+    $text = $request["text"];
 
     if (!$text) return;
 

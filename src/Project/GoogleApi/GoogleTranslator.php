@@ -22,6 +22,7 @@ class GoogleTranslator
     }
 
     //TODO переработать, возможно добавить Dto
+
     /**
      * @param string $text
      * @return mixed
@@ -29,6 +30,7 @@ class GoogleTranslator
      */
     public function translate(string $text): mixed
     {
+        //TODO исправить так как обновлен Conn
         $data = array_merge($this->options, ["q" => $text]);
         $response = (new Conn($this->url))->getResult($data, "get");
 
