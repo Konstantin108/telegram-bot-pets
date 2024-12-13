@@ -2,7 +2,7 @@
 
 namespace Project\Telegram;
 
-use Project\Dto\Telegram\ResponseDto;
+use Project\Dto\Telegram\Response\ResponseDto;
 use Project\Enums\User\UserStatusEnum;
 use Project\Exceptions\ConnException;
 use Project\Exceptions\DbException;
@@ -104,7 +104,8 @@ class Telegram
             $url = $this->url . $this->token . $method;
             $responseDto = ResponseDto::fromArray((new Conn($url))->getResult($data, "post"));
             if (!is_null($responseDto->errorCode)) {
-                //TODO тут тоже нужно Dto
+                //TODO тут тоже нужно Dto, наверное ресурс или трансформер так как тут я просто отдаю данные
+                // хотя пишу их в лог, надо подумать над форматом
                 $logData = [
                     "error" => $responseDto,
                     "messageData" => $data,

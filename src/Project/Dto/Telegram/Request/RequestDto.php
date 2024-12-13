@@ -1,12 +1,12 @@
 <?php
 
-namespace Project\Dto\Telegram;
+namespace Project\Dto\Telegram\Request;
 
 use JetBrains\PhpStorm\ArrayShape;
 use Project\Dto\DtoInterface;
 use Project\Enums\User\UserStatusEnum;
 
-class MessageDto implements DtoInterface
+class RequestDto implements DtoInterface
 {
     public string|null $requestType;
     public int|null $messageId;
@@ -73,9 +73,9 @@ class MessageDto implements DtoInterface
 
     /**
      * @param array $data
-     * @return MessageDto
+     * @return RequestDto
      */
-    public static function fromArray(array $data): MessageDto
+    public static function fromArray(array $data): RequestDto
     {
         if (isset($data["message"])) {
             $requestType = "message";

@@ -1,6 +1,6 @@
 <?php
 
-namespace Project\Dto\Telegram;
+namespace Project\Dto\Telegram\Response;
 
 use JetBrains\PhpStorm\ArrayShape;
 use Project\Enums\Telegram\ErrorCodeEnum;
