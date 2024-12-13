@@ -2,19 +2,19 @@
 
 namespace Project\Request;
 
-use Project\Dto\Telegram\MessageDto;
+use Project\Dto\Telegram\Request\RequestDto;
 
 class TelegramRequest extends Request
 {
     //TODO так же надо сделать с ответами от GoogleApi
     // работа с массивом только в Request - далее будут классы и дто
     /**
-     * @return MessageDto|null
+     * @return RequestDto|null
      */
-    public function body(): ?MessageDto
+    public function body(): ?RequestDto
     {
         if (!is_null($this->data)) {
-            return MessageDto::fromArray($this->data);
+            return RequestDto::fromArray($this->data);
         }
         return null;
     }

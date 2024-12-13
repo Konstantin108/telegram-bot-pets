@@ -1,6 +1,6 @@
 <?php
 
-namespace Project\Dto\Telegram;
+namespace Project\Dto\Telegram\Request;
 
 use JetBrains\PhpStorm\ArrayShape;
 use Project\Dto\DtoInterface;
