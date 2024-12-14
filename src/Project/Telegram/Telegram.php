@@ -41,7 +41,7 @@ class Telegram
                 "parse_mode" => "HTML",
                 "reply_markup" => $replyMarkup
             ],
-            "/sendMessage"
+            $this->sendMessageEndpoint()
         );
     }
 
@@ -61,7 +61,7 @@ class Telegram
                 "caption" => $photoData["caption"],
                 "reply_markup" => $replyMarkup
             ],
-            "/sendPhoto"
+            $this->sendPhotoEndpoint()
         );
     }
 
@@ -73,13 +73,12 @@ class Telegram
      */
     public function sendChatAction(string $chatId, string $action = "typing"): void
     {
-        //TODO возможно вынести названия экшенов в константы
         $this->send(
             [
                 "chat_id" => $chatId,
                 "action" => $action
             ],
-            "/sendChatAction"
+            $this->sendChatActionEndpoint()
         );
     }
 
@@ -89,30 +88,67 @@ class Telegram
      * @return void
      * @throws ConnException
      */
-    public function getAnswerCallbackQuery(string $text, string $callbackQueryId): void
+    public function answerCallbackQuery(string $text, string $callbackQueryId): void
     {
         $this->send(
             [
                 "text" => $text,
                 "callback_query_id" => $callbackQueryId
             ],
-            "/answerCallbackQuery"
+            $this->answerCallbackQueryEndpoint()
         );
     }
 
     /**
+     * @return string
+     */
+    private function mainEndpoint(): string
+    {
+        return sprintf("%s/bot%s/", $this->url, $this->token);
+    }
+
+    /**
+     * @return string
+     */
+    private function sendMessageEndpoint(): string
+    {
+        return $this->mainEndpoint() . "sendMessage";
+    }
+
+    /**
+     * @return string
+     */
+    private function sendPhotoEndpoint(): string
+    {
+        return $this->mainEndpoint() . "sendPhoto";
+    }
+
+    /**
+     * @return string
+     */
+    private function sendChatActionEndpoint(): string
+    {
+        return $this->mainEndpoint() . "sendChatAction";
+    }
+
+    /**
+     * @return string
+     */
+    private function answerCallbackQueryEndpoint(): string
+    {
+        return $this->mainEndpoint() . "answerCallbackQuery";
+    }
+
+    /**
      * @param array $data
-     * @param string $method
+     * @param string $endpoint
      * @return void
      * @throws ConnException
      */
-    private function send(array $data, string $method): void
+    private function send(array $data, string $endpoint): void
     {
         try {
-            //TODO не конкатенировать внутри метода
-            // надо сделать методы, которые отдают целиком нужный url, вместе с токеном
-            $url = $this->url . $this->token . $method;
-            $responseDto = ResponseDto::fromArray((new Conn($url))->post($data));
+            $responseDto = ResponseDto::fromArray((new Conn($endpoint))->post($data));
 
             if (!is_null($responseDto->errorCode)) {
                 if ($responseDto->errorCode->isBlocked()) {
@@ -120,6 +156,9 @@ class Telegram
                     $user->setStatus(UserStatusEnum::KICKED);
                     $user->save();
                 }
+
+                $endpointArray = explode("/", $endpoint);
+                $method = end($endpointArray);
 
                 throw new TelegramException(print_r(new LogDataDto($responseDto, $data, $method), true));
             }
