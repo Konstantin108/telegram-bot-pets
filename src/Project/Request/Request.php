@@ -4,13 +4,13 @@ namespace Project\Request;
 
 class Request
 {
-    protected array|null $data = null;
+    protected string|null $input = null;
 
     public function __construct()
     {
-//        $this->data = json_decode(file_get_contents("../../bots/pets/msg.json"), true);
-        if (!is_null($input = file_get_contents("php://input"))) {
-            $this->data = json_decode($input, true);
+//        if (mb_strlen($input = file_get_contents("../../bots/pets/msg.json")) > 0) {
+        if (mb_strlen($input = file_get_contents("php://input")) > 0) {
+            $this->input = $input;
         }
     }
 }

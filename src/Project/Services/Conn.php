@@ -20,6 +20,8 @@ class Conn
         $this->url = $url;
     }
 
+    //TODO сделать методы get() и post(), которые будут вызывать метод соединения с ресурсом
+
     /**
      * @param array $query
      * @param string $method

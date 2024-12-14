@@ -15,7 +15,7 @@ abstract class MainException extends Exception
     /**
      * @return void
      */
-    public function showError(): void
+    public function show(): void
     {
         Logger::create()->log($this->__toString());
 

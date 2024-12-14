@@ -7,13 +7,6 @@ use Project\Dto\DtoInterface;
 
 class FromDto implements DtoInterface
 {
-    public int $id;
-    public bool|null $isBot;
-    public string $firstName;
-    public string $lastName;
-    public string $username;
-    public string|null $languageCode;
-
     /**
      * @param int $id
      * @param bool|null $isBot
@@ -23,20 +16,14 @@ class FromDto implements DtoInterface
      * @param string|null $languageCode
      */
     private function __construct(
-        int         $id,
-        bool|null   $isBot,
-        string      $firstName,
-        string      $lastName,
-        string      $username,
-        string|null $languageCode
+        public int         $id,
+        public bool|null   $isBot,
+        public string      $firstName,
+        public string      $lastName,
+        public string      $username,
+        public string|null $languageCode
     )
     {
-        $this->id = $id;
-        $this->isBot = $isBot;
-        $this->firstName = $firstName;
-        $this->lastName = $lastName;
-        $this->username = $username;
-        $this->languageCode = $languageCode;
     }
 
     /**

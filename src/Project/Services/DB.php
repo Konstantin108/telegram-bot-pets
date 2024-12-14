@@ -3,10 +3,10 @@
 namespace Project\Services;
 
 use JetBrains\PhpStorm\ArrayShape;
-use Project\Exceptions\DbException;
+use PDO;
 use PDOException;
 use PDOStatement;
-use PDO;
+use Project\Exceptions\DbException;
 
 class DB
 {

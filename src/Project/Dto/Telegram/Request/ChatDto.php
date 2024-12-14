@@ -7,12 +7,6 @@ use Project\Dto\DtoInterface;
 
 class ChatDto implements DtoInterface
 {
-    public int $id;
-    public string $firstName;
-    public string $lastName;
-    public string $username;
-    public string $type;
-
     /**
      * @param int $id
      * @param string $firstName
@@ -20,13 +14,14 @@ class ChatDto implements DtoInterface
      * @param string $username
      * @param string $type
      */
-    private function __construct(int $id, string $firstName, string $lastName, string $username, string $type)
+    private function __construct(
+        public int    $id,
+        public string $firstName,
+        public string $lastName,
+        public string $username,
+        public string $type
+    )
     {
-        $this->id = $id;
-        $this->firstName = $firstName;
-        $this->lastName = $lastName;
-        $this->username = $username;
-        $this->type = $type;
     }
 
     /**
