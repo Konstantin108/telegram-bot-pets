@@ -53,7 +53,7 @@ $requestDto = (new TelegramRequest())->body();
 
 try {
     if (!is_null($requestDto)) {
-        //TODO так быть не должно надо выносить в методы
+        //TODO так быть не должно, надо выносить в методы
         $from = $requestDto->from;
 
         try {
@@ -215,7 +215,7 @@ function sendReaction(string $text, Telegram $telegram, string $callbackQueryId)
         "unlike" => "Вам не нравится это фото 😢"
     ];
 
-    $telegram->getAnswerCallbackQuery($reactions[$text], $callbackQueryId);
+    $telegram->answerCallbackQuery($reactions[$text], $callbackQueryId);
 }
 
 /**

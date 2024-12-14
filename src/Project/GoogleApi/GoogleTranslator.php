@@ -30,12 +30,11 @@ class GoogleTranslator
      */
     public function translate(string $text): mixed
     {
-        //TODO исправить так как обновлен Conn
         $data = array_merge($this->options, ["q" => $text]);
         $response = (new Conn($this->url))->get($data);
 
-        return array_reduce(array_shift($response), function ($a, $b) {
-            return $a . $b[0];
+        return array_reduce(array_shift($response), function ($accumulator, $item) {
+            return $accumulator . $item[0];
         });
     }
 
