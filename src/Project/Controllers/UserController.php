@@ -22,7 +22,7 @@ class UserController
      * @return void
      * @throws TypeErrorException
      */
-    public function writeUserDataToDB(RequestDto $requestDto): void
+    public function store(RequestDto $requestDto): void
     {
         try {
             if (is_null($user = User::where("chat_id", $requestDto->from->id))) {
@@ -40,7 +40,7 @@ class UserController
             $user->save();
 
         } catch (DbException $e) {
-            $e->showError();
+            $e->show();
         } catch (TypeError $e) {
             throw new TypeErrorException($e->getMessage());
         }

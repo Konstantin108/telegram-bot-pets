@@ -45,7 +45,6 @@ $defaultKeyboard = [
     "resize_keyboard" => true
 ];
 
-/** @var RequestDto $requestDto */
 $requestDto = (new TelegramRequest())->body();
 
 try {
@@ -54,9 +53,9 @@ try {
         $from = $requestDto->from;
 
         try {
-            (new UserController())->writeUserDataToDB($requestDto);
+            (new UserController())->store($requestDto);
         } catch (TypeErrorException $e) {
-            $e->showError();
+            $e->show();
         }
 
         if (is_null($requestDto->text)) return;
@@ -112,7 +111,7 @@ try {
     }
 
 } catch (ConnException|DbException|AccessModifiersException $e) {
-    $e->showError();
+    $e->show();
 }
 
 /**

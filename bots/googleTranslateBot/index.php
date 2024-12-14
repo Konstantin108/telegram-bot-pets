@@ -35,6 +35,7 @@ if (is_null($request = json_decode($request, true))) return;
 try {
     $request = $request["message"];
 
+    //TODO избавиться от этого
     $from = (object)$request["from"];
     $text = $request["text"];
 
@@ -56,7 +57,7 @@ try {
     }
 
 } catch (ConnException $e) {
-    $e->showError();
+    $e->show();
 }
 
 /**

@@ -69,7 +69,6 @@ abstract class ActiveRecordEntity
         $values = [];
         if (count($scopes) > 0) {
             foreach ($scopes as $scope) {
-                /** @var ScopeParamDto $paramDto */
                 foreach ($scope() as $paramDto) {
                     $filter .= " AND `$paramDto->column` $paramDto->operator :$paramDto->column";
                     $values[$paramDto->column] = $paramDto->value;

@@ -2,6 +2,7 @@
 
 namespace Project\Telegram;
 
+use Project\Dto\Telegram\Response\LogDataDto;
 use Project\Dto\Telegram\Response\ResponseDto;
 use Project\Enums\User\UserStatusEnum;
 use Project\Exceptions\ConnException;
@@ -33,7 +34,7 @@ class Telegram
      */
     public function sendMessage(string $text, string $chatId, string $replyMarkup = ""): void
     {
-        //TODO нужно использовать Dto
+        //TODO не создавать лишние переменные
         $data = [
             "chat_id" => $chatId,
             "text" => $text,
@@ -101,27 +102,23 @@ class Telegram
     private function send(array $data, string $method): void
     {
         try {
+            //TODO не конкатенировать внутри метода
+            // надо сделать методы, которые отдают целиком нужный url, вместе с токеном
             $url = $this->url . $this->token . $method;
             $responseDto = ResponseDto::fromArray((new Conn($url))->getResult($data, "post"));
-            if (!is_null($responseDto->errorCode)) {
-                //TODO тут тоже нужно Dto, наверное ресурс или трансформер так как тут я просто отдаю данные
-                // хотя пишу их в лог, надо подумать над форматом
-                $logData = [
-                    "error" => $responseDto,
-                    "messageData" => $data,
-                    "method" => $method
-                ];
 
+            if (!is_null($responseDto->errorCode)) {
                 if ($responseDto->errorCode->isBlocked()) {
                     $user = User::where("chat_id", $data["chat_id"]);
                     $user->setStatus(UserStatusEnum::KICKED);
                     $user->save();
                 }
 
-                throw new TelegramException(print_r($logData, true));
+                throw new TelegramException(print_r(new LogDataDto($responseDto, $data, $method), true));
             }
+
         } catch (TelegramException|DbException $e) {
-            $e->showError();
+            $e->show();
         }
     }
 }

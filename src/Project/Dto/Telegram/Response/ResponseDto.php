@@ -3,24 +3,22 @@
 namespace Project\Dto\Telegram\Response;
 
 use JetBrains\PhpStorm\ArrayShape;
+use Project\Dto\DtoInterface;
 use Project\Enums\Telegram\ErrorCodeEnum;
 
-class ResponseDto
+class ResponseDto implements DtoInterface
 {
-    public bool $ok;
-    public ErrorCodeEnum|null $errorCode;
-    public string|null $description;
-
     /**
      * @param bool $ok
      * @param ErrorCodeEnum|null $errorCode
      * @param string|null $description
      */
-    private function __construct(bool $ok, ?ErrorCodeEnum $errorCode, ?string $description)
+    private function __construct(
+        public bool           $ok,
+        public ?ErrorCodeEnum $errorCode,
+        public ?string        $description
+    )
     {
-        $this->ok = $ok;
-        $this->errorCode = $errorCode;
-        $this->description = $description;
     }
 
     /**

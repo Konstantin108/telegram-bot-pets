@@ -8,16 +8,6 @@ use Project\Enums\User\UserStatusEnum;
 
 class RequestDto implements DtoInterface
 {
-    public string|null $requestType;
-    public int|null $messageId;
-    public string|null $callbackId;
-    public FromDto $from;
-    public ChatDto $chat;
-    public int $date;
-    public string|null $text;
-    public UserStatusEnum $status;
-    public string|null $chatInstance;
-
     /**
      * @param string|null $requestType
      * @param int|null $messageId
@@ -28,34 +18,27 @@ class RequestDto implements DtoInterface
      * @param string|null $text
      * @param UserStatusEnum $status
      * @param string|null $chatInstance
+     * @param string|null $rawInput
      */
     private function __construct(
-        ?string        $requestType,
-        ?int           $messageId,
-        ?string        $callbackId,
-        FromDto        $from,
-        ChatDto        $chat,
-        int            $date,
-        ?string        $text,
-        UserStatusEnum $status,
-        ?string        $chatInstance
+        public ?string        $requestType,
+        public ?int           $messageId,
+        public ?string        $callbackId,
+        public FromDto        $from,
+        public ChatDto        $chat,
+        public int            $date,
+        public ?string        $text,
+        public UserStatusEnum $status,
+        public ?string        $chatInstance,
+        public ?string        $rawInput
     )
     {
-        $this->requestType = $requestType;
-        $this->messageId = $messageId;
-        $this->callbackId = $callbackId;
-        $this->from = $from;
-        $this->chat = $chat;
-        $this->date = $date;
-        $this->text = $text;
-        $this->status = $status;
-        $this->chatInstance = $chatInstance;
     }
 
     /**
-     * @return array{request_type: null|string, message_id: int|null, callback_id: null|string, from: array, chat: array, date: int, text: null|string, status: string, chat_instance: null|string}
+     * @return array{request_type: null|string, message_id: int|null, callback_id: null|string, from: array, chat: array, date: int, text: null|string, status: string, chat_instance: null|string, raw_input: null|string}
      */
-    #[ArrayShape(shape: ["request_type" => "null|string", "message_id" => "int|null", "callback_id" => "null|string", "from" => "array", "chat" => "array", "date" => "int", "text" => "null|string", "status" => "string", "chat_instance" => "null|string"])]
+    #[ArrayShape(shape: ["request_type" => "null|string", "message_id" => "int|null", "callback_id" => "null|string", "from" => "array", "chat" => "array", "date" => "int", "text" => "null|string", "status" => "string", "chat_instance" => "null|string", "raw_input" => "null|string"])]
     public function toArray(): array
     {
         return [
@@ -67,7 +50,8 @@ class RequestDto implements DtoInterface
             "date" => $this->date,
             "text" => $this->text,
             "status" => $this->status->value,
-            "chat_instance" => $this->chatInstance
+            "chat_instance" => $this->chatInstance,
+            "raw_input" => $this->rawInput
         ];
     }
 
@@ -77,6 +61,8 @@ class RequestDto implements DtoInterface
      */
     public static function fromArray(array $data): RequestDto
     {
+        $rawInput = $data["raw_input"];
+
         if (isset($data["message"])) {
             $requestType = "message";
             $data = $data["message"];
@@ -101,7 +87,8 @@ class RequestDto implements DtoInterface
             isset($data["new_chat_member"]["status"])
                 ? UserStatusEnum::from($data["new_chat_member"]["status"])
                 : UserStatusEnum::MEMBER,
-            $data["chat_instance"] ?? null
+            $data["chat_instance"] ?? null,
+            $rawInput
         );
     }
 
