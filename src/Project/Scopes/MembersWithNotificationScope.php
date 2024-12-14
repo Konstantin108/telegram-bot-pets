@@ -10,6 +10,9 @@ class MembersWithNotificationScope extends AbstractScope
     private const bool IS_NOTIFICATION_ENABLED = true;
     private const string USER_STATUS = UserStatusEnum::MEMBER->value;
 
+    /**
+     * @return array
+     */
     public function __invoke(): array
     {
         return [

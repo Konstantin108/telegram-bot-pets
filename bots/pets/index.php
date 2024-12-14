@@ -3,10 +3,14 @@ ini_set("display_errors", 1);
 ini_set("display_startup_errors", 1);
 error_reporting(E_ALL);
 
+//ini_set("display_errors", 0);
+//ini_set("log_errors", 1);
+//error_reporting(E_ALL);
+//ini_set("error_log", "errors.log");
+
 use JetBrains\PhpStorm\ArrayShape;
 use Project\Controllers\UserController;
 use Project\Dto\Telegram\Request\FromDto;
-use Project\Dto\Telegram\Request\RequestDto;
 use Project\Exceptions\AccessModifiersException;
 use Project\Exceptions\ConnException;
 use Project\Exceptions\DbException;

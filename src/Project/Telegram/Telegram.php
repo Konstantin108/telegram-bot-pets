@@ -34,14 +34,15 @@ class Telegram
      */
     public function sendMessage(string $text, string $chatId, string $replyMarkup = ""): void
     {
-        //TODO не создавать лишние переменные
-        $data = [
-            "chat_id" => $chatId,
-            "text" => $text,
-            "parse_mode" => "HTML",
-            "reply_markup" => $replyMarkup
-        ];
-        $this->send($data, "/sendMessage");
+        $this->send(
+            [
+                "chat_id" => $chatId,
+                "text" => $text,
+                "parse_mode" => "HTML",
+                "reply_markup" => $replyMarkup
+            ],
+            "/sendMessage"
+        );
     }
 
     /**
@@ -53,13 +54,15 @@ class Telegram
      */
     public function sendPhoto(array $photoData, string $chatId, string $replyMarkup = ""): void
     {
-        $data = [
-            "chat_id" => $chatId,
-            "photo" => curl_file_create($photoData["photo"]),
-            "caption" => $photoData["caption"],
-            "reply_markup" => $replyMarkup
-        ];
-        $this->send($data, "/sendPhoto");
+        $this->send(
+            [
+                "chat_id" => $chatId,
+                "photo" => curl_file_create($photoData["photo"]),
+                "caption" => $photoData["caption"],
+                "reply_markup" => $replyMarkup
+            ],
+            "/sendPhoto"
+        );
     }
 
     /**
@@ -70,12 +73,14 @@ class Telegram
      */
     public function sendChatAction(string $chatId, string $action = "typing"): void
     {
-        $data = [
-            "chat_id" => $chatId,
-            "action" => $action
-        ];
         //TODO возможно вынести названия экшенов в константы
-        $this->send($data, "/sendChatAction");
+        $this->send(
+            [
+                "chat_id" => $chatId,
+                "action" => $action
+            ],
+            "/sendChatAction"
+        );
     }
 
     /**
@@ -86,11 +91,13 @@ class Telegram
      */
     public function getAnswerCallbackQuery(string $text, string $callbackQueryId): void
     {
-        $data = [
-            "text" => $text,
-            "callback_query_id" => $callbackQueryId
-        ];
-        $this->send($data, "/answerCallbackQuery");
+        $this->send(
+            [
+                "text" => $text,
+                "callback_query_id" => $callbackQueryId
+            ],
+            "/answerCallbackQuery"
+        );
     }
 
     /**
@@ -105,7 +112,7 @@ class Telegram
             //TODO не конкатенировать внутри метода
             // надо сделать методы, которые отдают целиком нужный url, вместе с токеном
             $url = $this->url . $this->token . $method;
-            $responseDto = ResponseDto::fromArray((new Conn($url))->getResult($data, "post"));
+            $responseDto = ResponseDto::fromArray((new Conn($url))->post($data));
 
             if (!is_null($responseDto->errorCode)) {
                 if ($responseDto->errorCode->isBlocked()) {

@@ -61,7 +61,7 @@ class RequestDto implements DtoInterface
      */
     public static function fromArray(array $data): RequestDto
     {
-        $rawInput = $data["raw_input"];
+        $rawInput = $data["raw_input"] ?? null;
 
         if (isset($data["message"])) {
             $requestType = "message";

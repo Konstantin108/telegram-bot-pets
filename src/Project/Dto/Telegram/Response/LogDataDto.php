@@ -2,8 +2,6 @@
 
 namespace Project\Dto\Telegram\Response;
 
-use Project\Dto\Telegram\Response\ResponseDto;
-
 class LogDataDto
 {
     /**

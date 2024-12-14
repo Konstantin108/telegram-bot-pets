@@ -2,12 +2,12 @@
 
 namespace Project\Services;
 
-use JetBrains\PhpStorm\ArrayShape;
 use CurlHandle;
 use Project\Exceptions\ConnException;
 
 class Conn
 {
+    public const string ERROR = "Ошибка в URL";
     private false|CurlHandle $conn;
     private string $url;
 
@@ -20,24 +20,51 @@ class Conn
         $this->url = $url;
     }
 
-    //TODO сделать методы get() и post(), которые будут вызывать метод соединения с ресурсом
-
     /**
-     * @param array $query
-     * @param string $method
+     * @param array $data
      * @return mixed
      * @throws ConnException
      */
-    public function getResult(array $query, string $method): mixed
+    public function post(array $data): mixed
     {
-        $result = $this->exec($query, $method);
+        return $this->processResult([
+            CURLOPT_URL => $this->url,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 15,
+            CURLOPT_CONNECTTIMEOUT_MS => 6000
+        ]);
+    }
+
+    /**
+     * @param array $data
+     * @return mixed
+     * @throws ConnException
+     */
+    public function get(array $data): mixed
+    {
+        return $this->processResult([
+            CURLOPT_URL => $this->url . http_build_query($data),
+            CURLOPT_RETURNTRANSFER => true
+        ]);
+    }
+
+    /**
+     * @param array $options
+     * @return mixed
+     * @throws ConnException
+     */
+    private function processResult(array $options): mixed
+    {
+        $result = $this->exec($options);
 
         if ($msg = curl_error($this->conn)) {
             throw new ConnException($msg);
         }
 
         if (!$result) {
-            throw new ConnException("Ошибка в URL");
+            throw new ConnException(self::ERROR);
         }
 
         return json_decode($result, true);
@@ -45,42 +72,11 @@ class Conn
 
     /**
      * @param array $data
-     * @return array{CURLOPT_URL: string, CURLOPT_POST: true, CURLOPT_POSTFIELDS: array, CURLOPT_RETURNTRANSFER: true, CURLOPT_TIMEOUT: int, CURLOPT_CONNECTTIMEOUT_MS: int}
-     */
-    #[ArrayShape(shape: [CURLOPT_URL => "string", CURLOPT_POST => "bool", CURLOPT_POSTFIELDS => "", CURLOPT_RETURNTRANSFER => "bool", CURLOPT_TIMEOUT => "int", CURLOPT_CONNECTTIMEOUT_MS => "int"])]
-    private function post(array $data): array
-    {
-        return [
-            CURLOPT_URL => $this->url,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 15,
-            CURLOPT_CONNECTTIMEOUT_MS => 6000
-        ];
-    }
-
-    /**
-     * @param array $data
-     * @return array{CURLOPT_URL: string, CURLOPT_RETURNTRANSFER: true}
-     */
-    #[ArrayShape(shape: [CURLOPT_URL => "string", CURLOPT_RETURNTRANSFER => "bool"])]
-    private function get(array $data): array
-    {
-        return [
-            CURLOPT_URL => $this->url . http_build_query($data),
-            CURLOPT_RETURNTRANSFER => true
-        ];
-    }
-
-    /**
-     * @param array $data
-     * @param string $method
      * @return bool|string
      */
-    private function exec(array $data, string $method): bool|string
+    private function exec(array $data): bool|string
     {
-        curl_setopt_array($this->conn, $this->$method($data));
+        curl_setopt_array($this->conn, $data);
         return curl_exec($this->conn);
     }
 }

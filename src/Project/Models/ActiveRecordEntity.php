@@ -3,7 +3,6 @@
 namespace Project\Models;
 
 use Error;
-use Project\Dto\DB\ScopeParamDto;
 use Project\Exceptions\AccessModifiersException;
 use Project\Exceptions\DbException;
 use Project\Scopes\ScopeInterface;
