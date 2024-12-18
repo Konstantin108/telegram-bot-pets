@@ -104,7 +104,7 @@ class Telegram
      */
     private function mainEndpoint(): string
     {
-        return sprintf("%s/bot%s/", $this->url, $this->token);
+        return sprintf("%s/bot%s", $this->url, $this->token);
     }
 
     /**
@@ -112,7 +112,7 @@ class Telegram
      */
     private function sendMessageEndpoint(): string
     {
-        return $this->mainEndpoint() . "sendMessage";
+        return $this->mainEndpoint() . "/sendMessage";
     }
 
     /**
@@ -120,7 +120,7 @@ class Telegram
      */
     private function sendPhotoEndpoint(): string
     {
-        return $this->mainEndpoint() . "sendPhoto";
+        return $this->mainEndpoint() . "/sendPhoto";
     }
 
     /**
@@ -128,7 +128,7 @@ class Telegram
      */
     private function sendChatActionEndpoint(): string
     {
-        return $this->mainEndpoint() . "sendChatAction";
+        return $this->mainEndpoint() . "/sendChatAction";
     }
 
     /**
@@ -136,7 +136,7 @@ class Telegram
      */
     private function answerCallbackQueryEndpoint(): string
     {
-        return $this->mainEndpoint() . "answerCallbackQuery";
+        return $this->mainEndpoint() . "/answerCallbackQuery";
     }
 
     /**
