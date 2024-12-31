@@ -8,6 +8,7 @@ enum ErrorCodeEnum: int
     case UNAUTHORIZED = 401;
     case BOT_WAS_BLOCKED = 403;
     case NOT_FOUND = 404;
+    case TOO_MANY_REQUESTS = 429;
 
     /**
      * @return bool

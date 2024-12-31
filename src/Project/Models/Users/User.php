@@ -7,16 +7,20 @@ use Project\Models\ActiveRecordEntity;
 
 class User extends ActiveRecordEntity
 {
+    protected int $id;
     protected string $chatId;
     protected bool|null $isBot;
     protected string|null $firstName;
     protected string|null $lastName;
     protected string|null $username;
     protected bool $isAdmin;
+    protected bool $isTest;
     protected string $status;
     protected bool|null $notification;
     protected string|null $languageCode;
     protected string|null $createdAt;
+    protected string|null $updatedAt;
+    protected string|null $deletedAt;
 
     /**
      * @param string $chatId
@@ -80,6 +84,15 @@ class User extends ActiveRecordEntity
     public function setLanguageCode(?string $languageCode): void
     {
         $this->languageCode = $languageCode;
+    }
+
+    /**
+     * @param string $updatedAt
+     * @return void
+     */
+    public function setUpdatedAt(string $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
     }
 
     /**
