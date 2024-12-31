@@ -18,6 +18,7 @@ use Project\Exceptions\TypeErrorException;
 use Project\Models\Users\User;
 use Project\Request\TelegramRequest;
 use Project\Scopes\MembersWithNotificationScope;
+use Project\Scopes\TestMembersScope;
 use Project\Telegram\Telegram;
 
 spl_autoload_register(function ($className): void {
@@ -104,9 +105,11 @@ try {
         }
     } else {
         // массовое уведомление
-        if (count($users = User::filter(new MembersWithNotificationScope())) > 0) {
+        if (count($users = User::filter(new TestMembersScope())) > 0) {
+//        if (count($users = User::filter(new MembersWithNotificationScope())) > 0) {
             $dailyPhotoData = getImageForDailyNotification($allowExtensionsArray, $cats);
             foreach ($users as $user) {
+                /** @var User $user */
                 $dailyNotifyMessage = "Скучаешь, {$user->getFirstName()} {$user->getLastName()}? Вот полюбуйся!";
                 $telegram->sendMessage($dailyNotifyMessage, $user->getChatId(), json_encode($defaultKeyboard));
                 showCatImage($user->getChatId(), $telegram, $dailyPhotoData);
@@ -234,6 +237,7 @@ function sendReactionToAdmin(string $text, FromDto $from, Telegram $telegram, ar
         "unlike" => "ставит 👎 показаному фото"
     ];
 
+    //TODO полностью переделать, надо использовать скоп
     if (!in_array($from->id, $config["adminChatIds"])) {
         foreach ($config["adminChatIds"] as $oneAdminChatId) {
             $notifyForAdmin = "$from->firstName $from->lastName $reactions[$text]";

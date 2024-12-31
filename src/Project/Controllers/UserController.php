@@ -17,6 +17,8 @@ class UserController
         $this->adminChatIds = (require __DIR__ . "/../../config.php")["bots"]["pets"]["adminChatIds"];
     }
 
+    //TODO почему нет метода update
+
     /**
      * @param RequestDto $requestDto
      * @return void
@@ -36,6 +38,7 @@ class UserController
             $user->setIsAdmin(in_array($requestDto->from->id, $this->adminChatIds));
             $user->setStatus($requestDto->status);
             $user->setLanguageCode($requestDto->from->languageCode);
+            $user->setUpdatedAt(date("Y-m-d H:i:s"));
 
             $user->save();
 
