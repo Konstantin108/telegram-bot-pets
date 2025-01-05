@@ -33,9 +33,10 @@ class GoogleTranslator
         $data = array_merge($this->options, ["q" => $text]);
         $response = (new Conn($this->url))->get($data);
 
-        return array_reduce(array_shift($response), function ($accumulator, $item) {
-            return $accumulator . $item[0];
-        });
+        return array_reduce(
+            array_shift($response),
+            fn($accumulator, $item) => $accumulator . $item[0]
+        );
     }
 
     /**
