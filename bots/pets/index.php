@@ -16,7 +16,7 @@ use Project\Exceptions\ConnException;
 use Project\Exceptions\DbException;
 use Project\Exceptions\TypeErrorException;
 use Project\Models\Users\User;
-use Project\Request\TelegramRequest;
+use Project\Request\Request;
 use Project\Scopes\MembersWithNotificationScope;
 use Project\Scopes\TestMembersScope;
 use Project\Telegram\Telegram;
@@ -50,7 +50,7 @@ $defaultKeyboard = [
     "resize_keyboard" => true
 ];
 
-$requestDto = (new TelegramRequest())->body();
+$requestDto = (new Request())->getInputData();
 
 try {
     if (!is_null($requestDto)) {
@@ -110,7 +110,7 @@ try {
             $dailyPhotoData = getImageForDailyNotification($allowExtensionsArray, $cats);
             foreach ($users as $user) {
                 /** @var User $user */
-                $dailyNotifyMessage = "Скучаешь, {$user->getFirstName()} {$user->getLastName()}? Вот полюбуйся!";
+                $dailyNotifyMessage = "Скучаешь, {$user->getFirstName()}? Вот полюбуйся!";
                 $telegram->sendMessage($dailyNotifyMessage, $user->getChatId(), json_encode($defaultKeyboard));
                 showCatImage($user->getChatId(), $telegram, $dailyPhotoData);
             }

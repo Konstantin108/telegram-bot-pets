@@ -131,6 +131,7 @@ abstract class ActiveRecordEntity
      */
     private function insert(): void
     {
+        //TODO возможно убрать объявления переменных массивов
         $fields = [];
         $values = [];
         $columns = [];
