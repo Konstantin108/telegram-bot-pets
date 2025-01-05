@@ -3,7 +3,7 @@
 namespace Project\Request;
 
 use Project\Dto\Request\QueryParamsDto;
-use Project\Dto\Telegram\Request\RequestDto;
+use Project\Dto\Telegram\Request\InputDataDto;
 
 class InputDataResolver
 {
@@ -19,9 +19,9 @@ class InputDataResolver
     }
 
     /**
-     * @return RequestDto|null
+     * @return InputDataDto|null
      */
-    public function resolveInputData(): ?RequestDto
+    public function resolveInputData(): ?InputDataDto
     {
         if (mb_strlen($this->input) <= 0) {
             return null;
@@ -32,7 +32,7 @@ class InputDataResolver
             $data["raw_input"] = $this->input;
         }
 
-        return RequestDto::fromArray($data);
+        return InputDataDto::fromArray($data);
     }
 
     /**

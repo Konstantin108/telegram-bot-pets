@@ -6,7 +6,7 @@ use JetBrains\PhpStorm\ArrayShape;
 use Project\Dto\DtoInterface;
 use Project\Enums\User\UserStatusEnum;
 
-class RequestDto implements DtoInterface
+class InputDataDto implements DtoInterface
 {
     /**
      * @param string|null $requestType
@@ -57,9 +57,9 @@ class RequestDto implements DtoInterface
 
     /**
      * @param array $data
-     * @return RequestDto
+     * @return InputDataDto
      */
-    public static function fromArray(array $data): RequestDto
+    public static function fromArray(array $data): InputDataDto
     {
         $rawInput = $data["raw_input"] ?? null;
 

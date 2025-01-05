@@ -3,7 +3,7 @@
 namespace Project\Request;
 
 use Project\Dto\Request\QueryParamsDto;
-use Project\Dto\Telegram\Request\RequestDto;
+use Project\Dto\Telegram\Request\InputDataDto;
 
 class Request
 {
@@ -15,9 +15,9 @@ class Request
     }
 
     /**
-     * @return RequestDto|null
+     * @return InputDataDto|null
      */
-    public function getInputData(): ?RequestDto
+    public function getInputData(): ?InputDataDto
     {
         return $this->inputDataResolver->resolveInputData();
     }

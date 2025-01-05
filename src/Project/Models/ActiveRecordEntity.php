@@ -131,10 +131,7 @@ abstract class ActiveRecordEntity
      */
     private function insert(): void
     {
-        //TODO возможно убрать объявления переменных массивов
-        $fields = [];
-        $values = [];
-        $columns = [];
+        $fields = $values = $columns = [];
         foreach ($this as $fieldName => $value) {
             if (is_null($value)) continue;
             $fieldName = $this->camelCaseToUnderscore($fieldName);
@@ -175,8 +172,7 @@ abstract class ActiveRecordEntity
      */
     private function update(): void
     {
-        $fields = [];
-        $values = [];
+        $fields = $values = [];
         foreach ($this as $fieldName => $value) {
             if ($fieldName === "id") continue;
             $fieldName = $this->camelCaseToUnderscore($fieldName);

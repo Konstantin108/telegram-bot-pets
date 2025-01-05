@@ -2,7 +2,7 @@
 
 namespace Project\Controllers;
 
-use Project\Dto\Telegram\Request\RequestDto;
+use Project\Dto\Telegram\Request\InputDataDto;
 use Project\Exceptions\DbException;
 use Project\Exceptions\TypeErrorException;
 use Project\Models\Users\User;
@@ -20,24 +20,25 @@ class UserController
     //TODO почему нет метода update
 
     /**
-     * @param RequestDto $requestDto
+     * @param InputDataDto $inputDataDto
      * @return void
      * @throws TypeErrorException
      */
-    public function store(RequestDto $requestDto): void
+    public function store(InputDataDto $inputDataDto): void
     {
         try {
-            if (is_null($user = User::where("chat_id", $requestDto->from->id))) {
+            if (is_null($user = User::where("chat_id", $inputDataDto->from->id))) {
                 $user = new User();
-                $user->setChatId($requestDto->from->id);
+                $user->setChatId($inputDataDto->from->id);
             }
-            $user->setIsBot($requestDto->from->isBot);
-            $user->setFirstName($requestDto->from->firstName);
-            $user->setLastName($requestDto->from->lastName);
-            $user->setUsername($requestDto->from->username);
-            $user->setIsAdmin(in_array($requestDto->from->id, $this->adminChatIds));
-            $user->setStatus($requestDto->status);
-            $user->setLanguageCode($requestDto->from->languageCode);
+            $user->setIsBot($inputDataDto->from->isBot);
+            $user->setFirstName($inputDataDto->from->firstName);
+            $user->setLastName($inputDataDto->from->lastName);
+            $user->setUsername($inputDataDto->from->username);
+            $user->setIsAdmin(in_array($inputDataDto->from->id, $this->adminChatIds));
+            $user->setStatus($inputDataDto->status);
+            $user->setLanguageCode($inputDataDto->from->languageCode);
+            //TODO для обновления записи нужен отдельный метод
             $user->setUpdatedAt(date("Y-m-d H:i:s"));
 
             $user->save();
