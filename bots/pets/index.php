@@ -21,7 +21,7 @@ use Project\Scopes\MembersWithNotificationScope;
 use Project\Scopes\TestMembersScope;
 use Project\Telegram\Telegram;
 
-spl_autoload_register(function ($className): void {
+spl_autoload_register(function (string $className): void {
     $className = str_replace("\\", DIRECTORY_SEPARATOR, $className);
     require_once __DIR__ . "/../../src/$className.php";
 });
