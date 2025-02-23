@@ -50,7 +50,7 @@ $defaultKeyboard = [
     "resize_keyboard" => true
 ];
 
-$inputDataDto = (new Request())->getInputData();
+$inputDataDto = (new Request())->getData()->inputDataDto;
 
 try {
     if (!is_null($inputDataDto)) {

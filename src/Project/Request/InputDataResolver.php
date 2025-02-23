@@ -3,7 +3,9 @@
 namespace Project\Request;
 
 use Project\Dto\Request\QueryParamsDto;
+use Project\Dto\RequestDto;
 use Project\Dto\Telegram\Request\InputDataDto;
+use Project\Dumper\Dumper;
 
 class InputDataResolver
 {
@@ -13,15 +15,27 @@ class InputDataResolver
 
     public function __construct()
     {
-        $this->input = file_get_contents("php://input");
-//        $this->input = file_get_contents("../../bots/pets/msg.json");
+//        $this->input = file_get_contents("php://input");
+        $this->input = file_get_contents("../../bots/pets/msg.json");
         $this->get = $_GET;
+    }
+
+    /**
+     * @return RequestDto
+     */
+    public function data(): RequestDto
+    {
+        return new RequestDto(
+            method: $this->method(),
+            inputDataDto: $this->resolveInputData(),
+            queryParamsDto: $this->resolveQueryParams()
+        );
     }
 
     /**
      * @return InputDataDto|null
      */
-    public function resolveInputData(): ?InputDataDto
+    private function resolveInputData(): ?InputDataDto
     {
         if (mb_strlen($this->input) <= 0) {
             return null;
@@ -38,10 +52,21 @@ class InputDataResolver
     /**
      * @return QueryParamsDto|null
      */
-    public function resolveQueryParams(): ?QueryParamsDto
+    private function resolveQueryParams(): ?QueryParamsDto
     {
         return count($this->get) > 0
             ? new QueryParamsDto(params: $this->get)
             : null;
+    }
+
+    /**
+     * @return string
+     */
+    private function method(): string
+    {
+        return !is_null($queryParamsDto = $this->resolveQueryParams())
+        && !empty($queryParamsDto->params['mode'])
+            ? $queryParamsDto->params['mode']
+            : $this->resolveInputData()->text;
     }
 }
