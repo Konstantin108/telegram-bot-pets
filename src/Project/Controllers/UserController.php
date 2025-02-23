@@ -46,7 +46,7 @@ class UserController
         } catch (DbException $e) {
             $e->show();
         } catch (TypeError $e) {
-            throw new TypeErrorException($e->getMessage());
+            throw new TypeErrorException(errorMessage: $e->getMessage());
         }
     }
 }

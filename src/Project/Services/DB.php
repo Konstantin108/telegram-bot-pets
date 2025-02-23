@@ -34,7 +34,7 @@ class DB
                 ? $PDOStatement->fetchAll(PDO::FETCH_CLASS, $className)
                 : null;
         } catch (PDOException $e) {
-            throw new DbException($e->getMessage());
+            throw new DbException(errorMessage: $e->getMessage());
         }
     }
 
@@ -72,7 +72,7 @@ class DB
                     $this->getOptions()
                 );
             } catch (PDOException $e) {
-                throw new DbException($e->getMessage());
+                throw new DbException(errorMessage: $e->getMessage());
             }
         }
         return $this->conn;

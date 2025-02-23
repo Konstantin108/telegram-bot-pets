@@ -41,7 +41,7 @@ class InputDataResolver
     public function resolveQueryParams(): ?QueryParamsDto
     {
         return count($this->get) > 0
-            ? new QueryParamsDto($this->get)
+            ? new QueryParamsDto(params: $this->get)
             : null;
     }
 }

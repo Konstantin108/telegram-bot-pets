@@ -33,7 +33,7 @@ $cats = $config["cats"];
 $token = $config["token"];
 $from = null;
 
-$telegram = new Telegram($token);
+$telegram = new Telegram(token: $token);
 
 $defaultKeyboard = [
     "keyboard" => [

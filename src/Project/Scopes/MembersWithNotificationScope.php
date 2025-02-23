@@ -16,8 +16,16 @@ class MembersWithNotificationScope extends AbstractScope
     public function __invoke(): array
     {
         return [
-            new ScopeParamDto("notification", self::IS_NOTIFICATION_ENABLED, self::EQ),
-            new ScopeParamDto("status", self::USER_STATUS, self::EQ),
+            new ScopeParamDto(
+                column: "notification",
+                value: self::IS_NOTIFICATION_ENABLED,
+                operator: self::EQ
+            ),
+            new ScopeParamDto(
+                column: "status",
+                value: self::USER_STATUS,
+                operator: self::EQ
+            ),
         ];
     }
 }

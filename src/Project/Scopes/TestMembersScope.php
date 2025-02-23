@@ -14,7 +14,11 @@ class TestMembersScope extends AbstractScope
     public function __invoke(): array
     {
         return [
-            new ScopeParamDto("is_test", self::IS_TEST_MEMBER, self::EQ),
+            new ScopeParamDto(
+                column: "is_test",
+                value: self::IS_TEST_MEMBER,
+                operator: self::EQ
+            ),
         ];
     }
 }

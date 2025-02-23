@@ -75,20 +75,20 @@ class InputDataDto implements DtoInterface
         }
 
         return new self(
-            $requestType ?? null,
-            isset($data["message_id"])
+            requestType: $requestType ?? null,
+            messageId: isset($data["message_id"])
                 ? (int)$data["message_id"]
                 : null,
-            $data["id"] ?? null,
-            FromDto::fromArray($data["from"]),
-            ChatDto::fromArray($data["chat"] ?? $data["message"]["chat"]),
-            (int)$data["date"] ?? (int)$data["message"]["date"],
-            self::processText($data),
-            isset($data["new_chat_member"]["status"])
+            callbackId: $data["id"] ?? null,
+            from: FromDto::fromArray($data["from"]),
+            chat: ChatDto::fromArray($data["chat"] ?? $data["message"]["chat"]),
+            date: (int)$data["date"] ?? (int)$data["message"]["date"],
+            text: self::processText($data),
+            status: isset($data["new_chat_member"]["status"])
                 ? UserStatusEnum::from($data["new_chat_member"]["status"])
                 : UserStatusEnum::MEMBER,
-            $data["chat_instance"] ?? null,
-            $rawInput
+            chatInstance: $data["chat_instance"] ?? null,
+            rawInput: $rawInput
         );
     }
 

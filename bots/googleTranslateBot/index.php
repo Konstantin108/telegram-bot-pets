@@ -22,7 +22,7 @@ $token = (include __DIR__ . "/../../src/config.php")["bots"]["googleTranslateBot
 $text = "";
 $from = null;
 
-$telegram = new Telegram($token);
+$telegram = new Telegram(token: $token);
 
 $keyboard = [
     "keyboard" => [
