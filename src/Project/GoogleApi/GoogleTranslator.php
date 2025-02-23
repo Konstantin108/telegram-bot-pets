@@ -31,7 +31,7 @@ class GoogleTranslator
     public function translate(string $text): mixed
     {
         $data = array_merge($this->options, ["q" => $text]);
-        $response = (new Conn($this->url))->get($data);
+        $response = (new Conn(url: $this->url))->get($data);
 
         return array_reduce(
             array_shift($response),

@@ -16,12 +16,12 @@ use Project\Exceptions\ConnException;
 use Project\Exceptions\DbException;
 use Project\Exceptions\TypeErrorException;
 use Project\Models\Users\User;
-use Project\Request\TelegramRequest;
+use Project\Request\Request;
 use Project\Scopes\MembersWithNotificationScope;
 use Project\Scopes\TestMembersScope;
 use Project\Telegram\Telegram;
 
-spl_autoload_register(function ($className): void {
+spl_autoload_register(function (string $className): void {
     $className = str_replace("\\", DIRECTORY_SEPARATOR, $className);
     require_once __DIR__ . "/../../src/$className.php";
 });
@@ -33,7 +33,7 @@ $cats = $config["cats"];
 $token = $config["token"];
 $from = null;
 
-$telegram = new Telegram($token);
+$telegram = new Telegram(token: $token);
 
 $defaultKeyboard = [
     "keyboard" => [
@@ -50,42 +50,42 @@ $defaultKeyboard = [
     "resize_keyboard" => true
 ];
 
-$requestDto = (new TelegramRequest())->body();
+$inputDataDto = (new Request())->getInputData();
 
 try {
-    if (!is_null($requestDto)) {
+    if (!is_null($inputDataDto)) {
         //TODO так быть не должно, надо выносить в методы
-        $from = $requestDto->from;
+        $from = $inputDataDto->from;
 
         try {
-            (new UserController())->store($requestDto);
+            (new UserController())->store($inputDataDto);
         } catch (TypeErrorException $e) {
             $e->show();
         }
 
-        if (is_null($requestDto->text)) return;
+        if (is_null($inputDataDto->text)) return;
 
-        switch ($requestDto->text) {
+        switch ($inputDataDto->text) {
             //TODO возможно вынести названия действий в константы
             case "/start":
-                $telegram->sendMessage("Бот активирован", $requestDto->from->id, json_encode($defaultKeyboard));
+                $telegram->sendMessage("Бот активирован", $inputDataDto->from->id, json_encode($defaultKeyboard));
                 break;
             case "обо мне":
-                aboutBot($requestDto->from->id, $telegram, $defaultKeyboard);
+                aboutBot($inputDataDto->from->id, $telegram, $defaultKeyboard);
                 break;
             case "список команд":
-                commandsList($requestDto->from, $telegram, $defaultKeyboard);
+                commandsList($inputDataDto->from, $telegram, $defaultKeyboard);
                 break;
             case "курага":
             case "ватсон":
             case "василиса":
-                $telegram->sendChatAction($requestDto->from->id, "upload_photo");
-                $photoData = getRandomPhoto($cats[$requestDto->text]["en_nom"], $allowExtensionsArray);
-                showCatImage($requestDto->from->id, $telegram, $photoData);
+                $telegram->sendChatAction($inputDataDto->from->id, "upload_photo");
+                $photoData = getRandomPhoto($cats[$inputDataDto->text]["en_nom"], $allowExtensionsArray);
+                showCatImage($inputDataDto->from->id, $telegram, $photoData);
 
-                if (!in_array($requestDto->from->id, $config["adminChatIds"])) {
+                if (!in_array($inputDataDto->from->id, $config["adminChatIds"])) {
                     foreach ($config["adminChatIds"] as $oneAdminChatId) {
-                        $notifyForAdmin = "$from->firstName $from->lastName сейчас любуется {$cats[$requestDto->text]["ru_ins"]}"
+                        $notifyForAdmin = "$from->firstName $from->lastName сейчас любуется {$cats[$inputDataDto->text]["ru_ins"]}"
                             . "\nПоказано это замечательное фото 🤩";
 
                         $telegram->sendMessage($notifyForAdmin, $oneAdminChatId, json_encode($defaultKeyboard));
@@ -96,8 +96,8 @@ try {
             // callback действия
             case "like":
             case "unlike":
-                sendReaction($requestDto->text, $telegram, $requestDto->callbackId);
-                sendReactionToAdmin($requestDto->text, $from, $telegram, $config, $defaultKeyboard);
+                sendReaction($inputDataDto->text, $telegram, $inputDataDto->callbackId);
+                sendReactionToAdmin($inputDataDto->text, $from, $telegram, $config, $defaultKeyboard);
                 break;
             default:
                 $telegram->sendMessage("Используй кнопки с командами", $from->id, json_encode($defaultKeyboard));
@@ -110,7 +110,7 @@ try {
             $dailyPhotoData = getImageForDailyNotification($allowExtensionsArray, $cats);
             foreach ($users as $user) {
                 /** @var User $user */
-                $dailyNotifyMessage = "Скучаешь, {$user->getFirstName()} {$user->getLastName()}? Вот полюбуйся!";
+                $dailyNotifyMessage = "Скучаешь, {$user->getFirstName()}? Вот полюбуйся!";
                 $telegram->sendMessage($dailyNotifyMessage, $user->getChatId(), json_encode($defaultKeyboard));
                 showCatImage($user->getChatId(), $telegram, $dailyPhotoData);
             }

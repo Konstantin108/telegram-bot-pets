@@ -12,7 +12,7 @@ use Project\Telegram\Telegram;
 use Project\Exceptions\ConnException;
 use Project\GoogleApi\GoogleTranslator;
 
-spl_autoload_register(function ($className): void {
+spl_autoload_register(function (string $className): void {
     $className = str_replace("\\", DIRECTORY_SEPARATOR, $className);
     require_once __DIR__ . "/../../src/$className.php";
 });
@@ -22,7 +22,7 @@ $token = (include __DIR__ . "/../../src/config.php")["bots"]["googleTranslateBot
 $text = "";
 $from = null;
 
-$telegram = new Telegram($token);
+$telegram = new Telegram(token: $token);
 
 $keyboard = [
     "keyboard" => [

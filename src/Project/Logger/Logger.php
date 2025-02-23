@@ -2,9 +2,6 @@
 
 namespace Project\Logger;
 
-use Project\Dto\DtoInterface;
-use stdClass;
-
 class Logger
 {
     private bool $writeLog;
@@ -19,6 +16,8 @@ class Logger
         $this->logFile = $logSettings["logFile"];
         $this->debugLogFile = $logSettings["debugLogFile"];
     }
+
+    //TODO возможно после изменения конфига сделать статичным класс Logger
 
     /**
      * @return Logger
@@ -40,30 +39,30 @@ class Logger
     }
 
     /**
-     * @param string|array|stdClass|DtoInterface $data
+     * @param mixed $data
      * @param string|null $path
      * @param bool $formatWithDate
      * @return void
      */
     public function debug(
-        string|array|stdClass|DtoInterface $data,
-        ?string                            $path = null,
-        bool                               $formatWithDate = false
+        mixed   $data,
+        ?string $path = null,
+        bool    $formatWithDate = false
     ): void
     {
         $this->write($data, $formatWithDate, $path ?? $this->debugLogFile);
     }
 
     /**
-     * @param string|array|stdClass|DtoInterface $data
+     * @param mixed $data
      * @param bool $formatWithDate
      * @param string $path
      * @return void
      */
     private function write(
-        string|array|stdClass|DtoInterface $data,
-        bool                               $formatWithDate,
-        string                             $path
+        mixed  $data,
+        bool   $formatWithDate,
+        string $path
     ): void
     {
         if (!is_string($data)) {

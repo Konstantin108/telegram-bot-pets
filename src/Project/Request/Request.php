@@ -2,15 +2,31 @@
 
 namespace Project\Request;
 
+use Project\Dto\Request\QueryParamsDto;
+use Project\Dto\Telegram\Request\InputDataDto;
+
 class Request
 {
-    protected string|null $input = null;
+    protected InputDataResolver $inputDataResolver;
 
     public function __construct()
     {
-//        if (mb_strlen($input = file_get_contents("../../bots/pets/msg.json")) > 0) {
-        if (mb_strlen($input = file_get_contents("php://input")) > 0) {
-            $this->input = $input;
-        }
+        $this->inputDataResolver = new InputDataResolver();
+    }
+
+    /**
+     * @return InputDataDto|null
+     */
+    public function getInputData(): ?InputDataDto
+    {
+        return $this->inputDataResolver->resolveInputData();
+    }
+
+    /**
+     * @return QueryParamsDto|null
+     */
+    public function getQueryParams(): ?QueryParamsDto
+    {
+        return $this->inputDataResolver->resolveQueryParams();
     }
 }

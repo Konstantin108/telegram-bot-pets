@@ -49,12 +49,12 @@ class FromDto implements DtoInterface
     public static function fromArray(array $data): FromDto
     {
         return new self(
-            (int)$data["id"],
-            $data["is_bot"],
-            $data["first_name"],
-            $data["last_name"],
-            $data["username"],
-            $data["language_code"]
+            id: (int)$data["id"],
+            isBot: $data["is_bot"],
+            firstName: $data["first_name"],
+            lastName: $data["last_name"],
+            username: $data["username"],
+            languageCode: $data["language_code"]
         );
     }
 }

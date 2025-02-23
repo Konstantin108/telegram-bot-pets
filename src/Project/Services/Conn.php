@@ -60,11 +60,11 @@ class Conn
         $result = $this->exec($options);
 
         if ($msg = curl_error($this->conn)) {
-            throw new ConnException($msg);
+            throw new ConnException(errorMessage: $msg);
         }
 
         if (!$result) {
-            throw new ConnException(self::ERROR);
+            throw new ConnException(errorMessage: self::ERROR);
         }
 
         return json_decode($result, true);

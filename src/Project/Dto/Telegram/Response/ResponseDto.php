@@ -41,11 +41,11 @@ class ResponseDto implements DtoInterface
     public static function fromArray(array $data): ResponseDto
     {
         return new self(
-            $data["ok"],
-            isset($data["error_code"])
+            ok: $data["ok"],
+            errorCode: isset($data["error_code"])
                 ? ErrorCodeEnum::from($data["error_code"])
                 : null,
-            $data["description"] ?? null
+            description: $data["description"] ?? null
         );
     }
 }

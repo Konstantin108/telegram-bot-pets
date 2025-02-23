@@ -4,6 +4,8 @@ namespace Project\Dumper;
 
 class Dumper
 {
+    //TODO возможно переделать в трэйт
+
     /**
      * @param mixed ...$data
      * @return void
@@ -12,7 +14,7 @@ class Dumper
     {
         self::process(
             debug_backtrace(),
-            array_map(fn($item) => $item, $data)
+            array_map(fn(mixed $item) => $item, $data)
         );
     }
 
@@ -24,7 +26,7 @@ class Dumper
     {
         self::process(
             debug_backtrace(),
-            array_map(fn($item) => $item, $data),
+            array_map(fn(mixed $item) => $item, $data),
             true
         );
     }

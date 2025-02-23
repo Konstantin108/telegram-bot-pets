@@ -46,11 +46,11 @@ class ChatDto implements DtoInterface
     public static function fromArray(array $data): ChatDto
     {
         return new self(
-            (int)$data["id"],
-            $data["first_name"],
-            $data["last_name"],
-            $data["username"],
-            $data["type"]
+            id: (int)$data["id"],
+            firstName: $data["first_name"],
+            lastName: $data["last_name"],
+            username: $data["username"],
+            type: $data["type"]
         );
     }
 }

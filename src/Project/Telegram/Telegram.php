@@ -148,7 +148,7 @@ class Telegram
     private function send(array $data, string $endpoint): void
     {
         try {
-            $responseDto = ResponseDto::fromArray((new Conn($endpoint))->post($data));
+            $responseDto = ResponseDto::fromArray((new Conn(url: $endpoint))->post($data));
 
             if (!is_null($responseDto->errorCode)) {
                 if ($responseDto->errorCode->isBlocked()) {
@@ -160,7 +160,13 @@ class Telegram
                 $endpointArray = explode("/", $endpoint);
                 $method = end($endpointArray);
 
-                throw new TelegramException(print_r(new LogDataDto($responseDto, $data, $method), true));
+                throw new TelegramException(
+                    errorMessage: print_r(new LogDataDto(
+                        response: $responseDto,
+                        messageData: $data,
+                        method: $method
+                    ), true)
+                );
             }
 
         } catch (TelegramException|DbException $e) {

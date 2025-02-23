@@ -1,0 +1,20 @@
+<?php
+//TODO так же возможно все это надо будет вынести
+ini_set("display_errors", 1);
+ini_set("display_startup_errors", 1);
+error_reporting(E_ALL);
+
+//ini_set("display_errors", 0);
+//ini_set("log_errors", 1);
+//error_reporting(E_ALL);
+//ini_set("error_log", "errors.log");
+
+spl_autoload_register(function (string $className): void {
+    $className = str_replace("\\", DIRECTORY_SEPARATOR, $className);
+    require_once __DIR__ . "/../../src/$className.php";
+});
+
+$request = new \Project\Request\Request();
+//\Project\Dumper\Dumper::dump($request);
+
+\Project\Logger\Logger::create()->debug($request, "request.txt");
