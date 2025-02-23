@@ -107,7 +107,7 @@ abstract class ActiveRecordEntity
      */
     protected static function getDB(): DB
     {
-        return DB::getInstance();
+        return DB::call();
     }
 
     /**

@@ -15,8 +15,8 @@ class InputDataResolver
 
     public function __construct()
     {
-//        $this->input = file_get_contents("php://input");
-        $this->input = file_get_contents("../../bots/pets/msg.json");
+        $this->input = file_get_contents("php://input");
+//        $this->input = file_get_contents("../../bots/pets/msg.json");
         $this->get = $_GET;
     }
 
@@ -26,7 +26,7 @@ class InputDataResolver
     public function data(): RequestDto
     {
         return new RequestDto(
-            method: $this->method(),
+            route: $this->route(),
             inputDataDto: $this->resolveInputData(),
             queryParamsDto: $this->resolveQueryParams()
         );
@@ -62,11 +62,11 @@ class InputDataResolver
     /**
      * @return string
      */
-    private function method(): string
+    private function route(): string
     {
         return !is_null($queryParamsDto = $this->resolveQueryParams())
-        && !empty($queryParamsDto->params['mode'])
-            ? $queryParamsDto->params['mode']
+        && !empty($queryParamsDto->params["mode"])
+            ? $queryParamsDto->params["mode"]
             : $this->resolveInputData()->text;
     }
 }

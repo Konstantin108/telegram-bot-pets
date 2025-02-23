@@ -8,12 +8,12 @@ use Project\Dto\Telegram\Request\InputDataDto;
 class RequestDto
 {
     /**
-     * @param string $method
+     * @param string $route
      * @param InputDataDto|null $inputDataDto
      * @param QueryParamsDto|null $queryParamsDto
      */
     public function __construct(
-        public string          $method,
+        public string          $route,
         public ?InputDataDto   $inputDataDto,
         public ?QueryParamsDto $queryParamsDto
     )

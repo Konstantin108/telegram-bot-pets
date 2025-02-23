@@ -4,9 +4,12 @@ namespace Project\GoogleApi;
 
 use Project\Exceptions\ConnException;
 use Project\Services\Conn;
+use Project\Traits\SingletonTrait;
 
 class GoogleTranslator
 {
+    use SingletonTrait;
+
     private string $url;
     private array $options;
 
@@ -44,6 +47,6 @@ class GoogleTranslator
      */
     public static function create(): GoogleTranslator
     {
-        return new self();
+        return static::getInstance();
     }
 }

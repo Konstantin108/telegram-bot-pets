@@ -7,9 +7,12 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use Project\Exceptions\DbException;
+use Project\Traits\SingletonTrait;
 
 class DB
 {
+    use SingletonTrait;
+
     private static null|DB $instance = null;
     private mixed $config;
     private PDO $conn;
@@ -50,11 +53,9 @@ class DB
     /**
      * @return DB|null
      */
-    public static function getInstance(): ?DB
+    public static function call(): ?DB
     {
-        return !self::$instance
-            ? self::$instance = new self()
-            : self::$instance;
+        return static::getInstance();
     }
 
     /**
