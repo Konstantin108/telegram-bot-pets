@@ -5,11 +5,11 @@ namespace Project\Request;
 use Project\Dto\Request\QueryParamsDto;
 use Project\Dto\RequestDto;
 use Project\Dto\Telegram\Request\InputDataDto;
-use Project\Dumper\Dumper;
 
 class InputDataResolver
 {
     protected const bool WITH_RAW = false;
+    protected const string DEFAULT_ROUTE = "test";
     protected string|null $input;
     protected array $get;
 
@@ -55,7 +55,7 @@ class InputDataResolver
     private function resolveQueryParams(): ?QueryParamsDto
     {
         return count($this->get) > 0
-            ? new QueryParamsDto(params: $this->get)
+            ? new QueryParamsDto($this->get)
             : null;
     }
 
@@ -64,9 +64,8 @@ class InputDataResolver
      */
     private function route(): string
     {
-        return !is_null($queryParamsDto = $this->resolveQueryParams())
-        && !empty($queryParamsDto->params["mode"])
-            ? $queryParamsDto->params["mode"]
-            : $this->resolveInputData()->text;
+        return $this->resolveQueryParams()->params["mode"]
+            ?? $this->resolveInputData()->text
+            ?? self::DEFAULT_ROUTE;
     }
 }

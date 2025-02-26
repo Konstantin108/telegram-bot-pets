@@ -22,7 +22,7 @@ class Route
      * @param array $controllerAndAction
      * @return Route
      */
-    public static function setRoute(string $routeName, array $controllerAndAction): Route
+    public static function post(string $routeName, array $controllerAndAction): Route
     {
         [$controllerName, $actionName] = $controllerAndAction;
 
