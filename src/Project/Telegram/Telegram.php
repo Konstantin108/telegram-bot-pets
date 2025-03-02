@@ -148,26 +148,32 @@ class Telegram
     private function send(array $data, string $endpoint): void
     {
         try {
-            $responseDto = ResponseDto::fromArray((new Conn(url: $endpoint))->post($data));
+            $responseDto = ResponseDto::fromArray((new Conn($endpoint))->post($data));
 
-            if (!is_null($responseDto->errorCode)) {
-                if ($responseDto->errorCode->isBlocked()) {
-                    $user = User::where("chat_id", $data["chat_id"]);
-                    $user->setStatus(UserStatusEnum::KICKED);
-                    $user->save();
-                }
+            if (is_null($responseDto->errorCode)) {
+                return;
+            }
 
-                $endpointArray = explode("/", $endpoint);
-                $method = end($endpointArray);
+            if ($responseDto->errorCode->isBlocked()) {
+                $user = User::where("chat_id", $data["chat_id"]);
+                $user->setStatus(UserStatusEnum::KICKED);
+                $user->save();
+            }
 
-                throw new TelegramException(
-                    errorMessage: print_r(new LogDataDto(
+            $endpointArray = explode("/", $endpoint);
+            $method = end($endpointArray);
+
+            throw new TelegramException(
+                print_r(
+                    new LogDataDto(
                         response: $responseDto,
                         messageData: $data,
                         method: $method
-                    ), true)
-                );
-            }
+                    ),
+                    true
+                )
+            );
+
 
         } catch (TelegramException|DbException $e) {
             $e->show();

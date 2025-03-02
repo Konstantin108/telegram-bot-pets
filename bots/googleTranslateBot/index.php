@@ -22,7 +22,7 @@ $token = (include __DIR__ . "/../../src/config.php")["bots"]["googleTranslateBot
 $text = "";
 $from = null;
 
-$telegram = new Telegram(token: $token);
+$telegram = new Telegram($token);
 
 $keyboard = [
     "keyboard" => [
@@ -35,7 +35,9 @@ $keyboard = [
 
 $request = file_get_contents("php://input");
 
-if (is_null($request = json_decode($request, true))) return;
+if (is_null($request = json_decode($request, true))) {
+    return;
+}
 
 try {
     $request = $request["message"];
@@ -44,7 +46,9 @@ try {
     $from = (object)$request["from"];
     $text = $request["text"];
 
-    if (!$text) return;
+    if (is_null($text)) {
+        return;
+    }
 
     $text = mb_strtolower($text);
 

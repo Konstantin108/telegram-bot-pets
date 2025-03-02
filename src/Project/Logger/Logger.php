@@ -2,8 +2,12 @@
 
 namespace Project\Logger;
 
+use Project\Traits\SingletonTrait;
+
 class Logger
 {
+    use SingletonTrait;
+
     private bool $writeLog;
     private string $logFile;
     private string $debugLogFile;
@@ -24,7 +28,7 @@ class Logger
      */
     public static function create(): Logger
     {
-        return new self();
+        return static::getInstance();
     }
 
     /**

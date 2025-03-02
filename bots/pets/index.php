@@ -33,7 +33,7 @@ $cats = $config["cats"];
 $token = $config["token"];
 $from = null;
 
-$telegram = new Telegram(token: $token);
+$telegram = new Telegram($token);
 
 $defaultKeyboard = [
     "keyboard" => [
@@ -50,7 +50,7 @@ $defaultKeyboard = [
     "resize_keyboard" => true
 ];
 
-$inputDataDto = (new Request())->getInputData();
+$inputDataDto = (new Request())->getData()->inputDataDto;
 
 try {
     if (!is_null($inputDataDto)) {
@@ -63,7 +63,9 @@ try {
             $e->show();
         }
 
-        if (is_null($inputDataDto->text)) return;
+        if (is_null($inputDataDto->text)) {
+            return;
+        }
 
         switch ($inputDataDto->text) {
             //TODO возможно вынести названия действий в константы
