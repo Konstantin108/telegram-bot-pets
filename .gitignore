@@ -2,4 +2,3 @@
 .idea
 .env
 /src/config.php
-/pets_without_autoloader.rar
