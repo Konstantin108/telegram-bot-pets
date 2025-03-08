@@ -3,6 +3,7 @@
 namespace Project\Controllers\Pets;
 
 use JetBrains\PhpStorm\ArrayShape;
+use Project\Configuration\Config;
 use Project\Models\Users\User;
 use Project\Scopes\TestMembersScope;
 use Project\Telegram\Telegram;
@@ -17,7 +18,7 @@ class NotificationController
     {
         //TODO сначало помещать значения в config и потом оттуда доставать, а не сразу из .env
         // надо разделить конфиги на разные файлы
-        $this->telegram = new Telegram(getenv("PETS_BOT_TOKEN"));
+        $this->telegram = new Telegram(Config::get("telegram.bots.pets.token"));
     }
 
     //TODO возможно контроллеры, методы которых отслылают сообщения в бота надо будет

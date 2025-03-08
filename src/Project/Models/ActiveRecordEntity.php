@@ -133,7 +133,9 @@ abstract class ActiveRecordEntity
     {
         $fields = $values = $columns = [];
         foreach ($this as $fieldName => $value) {
-            if (is_null($value)) continue;
+            if (is_null($value)) {
+                continue;
+            }
             $fieldName = $this->camelCaseToUnderscore($fieldName);
             $fields[] = ":$fieldName";
             $values[$fieldName] = $value;
@@ -174,7 +176,9 @@ abstract class ActiveRecordEntity
     {
         $fields = $values = [];
         foreach ($this as $fieldName => $value) {
-            if ($fieldName === "id") continue;
+            if ($fieldName === "id") {
+                continue;
+            }
             $fieldName = $this->camelCaseToUnderscore($fieldName);
             $fields[] = "`$fieldName` = :$fieldName";
             $values[$fieldName] = $value;
