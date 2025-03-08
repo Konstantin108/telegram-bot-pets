@@ -10,11 +10,16 @@ class MessageController
     // создать .env, config и DI
     public function __construct()
     {
-
+        //
     }
 
     public function startBot(InputDataDto $data): void
     {
+        //
+    }
 
+    public function useButtonsMessage(): void
+    {
+        //
     }
 }

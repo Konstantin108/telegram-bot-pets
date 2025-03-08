@@ -2,22 +2,23 @@
 
 namespace Project\Router;
 
+use Project\Controllers\Pets\MessageController;
 use Project\Request\Request;
-use Project\Traits\SingletonTrait;
 
 class Router
 {
+    public const string USE_BUTTONS = "use_buttons";
     //TODO файлы с роутами нужно будет переработать
-
-    use SingletonTrait;
-
     private Request $request;
     private array $routes;
 
-    private function __construct()
+    /**
+     * @param array $routes
+     */
+    public function __construct(array $routes)
     {
         $this->request = new Request();
-        $this->routes = require_once __DIR__ . "/../../routes.php";
+        $this->routes = $routes;
     }
 
     /**
@@ -25,7 +26,7 @@ class Router
      */
     public function routing(): void
     {
-        $route = $this->findRoute();
+        $route = $this->findRoute() ?? $this->setRoute();
         $controllerName = $route->controllerName;
         $actionName = $route->actionName;
 
@@ -33,11 +34,11 @@ class Router
     }
 
     /**
-     * @return Router
+     * @return Route
      */
-    public static function run(): Router
+    private function setRoute(): Route
     {
-        return static::getInstance();
+        return Route::post(self::USE_BUTTONS, [MessageController::class, "useButtonsMessage"]);
     }
 
     /**

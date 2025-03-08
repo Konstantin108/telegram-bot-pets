@@ -5,7 +5,6 @@ namespace Project\Request;
 use Project\Dto\Request\QueryParamsDto;
 use Project\Dto\RequestDto;
 use Project\Dto\Telegram\Request\InputDataDto;
-use Project\Enums\Router\RouteEnum;
 
 class InputDataResolver
 {
@@ -65,16 +64,8 @@ class InputDataResolver
      */
     private function route(): string
     {
-        $requestRoute = $this->resolveQueryParams()->params["mode"]
+        return $this->resolveQueryParams()->params["mode"]
             ?? $this->resolveInputData()?->text
             ?? self::DEFAULT_ROUTE;
-
-        foreach (RouteEnum::cases() as $case) {
-            if ($case->value === $requestRoute) {
-                return $case->name();
-            }
-        }
-
-        return RouteEnum::USE_BUTTONS->name();
     }
 }

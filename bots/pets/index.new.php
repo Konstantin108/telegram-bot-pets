@@ -9,6 +9,7 @@ error_reporting(E_ALL);
 //error_reporting(E_ALL);
 //ini_set("error_log", "errors.log");
 
+use Project\Dotenv\Dotenv;
 use Project\Router\Router;
 
 spl_autoload_register(function (string $className): void {
@@ -22,5 +23,11 @@ spl_autoload_register(function (string $className): void {
 // - CallbackQueryController
 // - MyChatMemberController
 // - AdminActionController
+// - NotificationController
 
-Router::run()->routing();
+//TODO надо переделать
+(new Dotenv())->load(__DIR__ . "/../../.env");
+
+$routes = require_once __DIR__ . "/routes.php";
+
+(new Router($routes))->routing();
