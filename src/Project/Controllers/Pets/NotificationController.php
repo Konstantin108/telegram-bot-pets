@@ -16,8 +16,6 @@ class NotificationController
 
     public function __construct()
     {
-        //TODO сначало помещать значения в config и потом оттуда доставать, а не сразу из .env
-        // надо разделить конфиги на разные файлы
         $this->telegram = new Telegram(Config::get("telegram.bots.pets.token"));
     }
 

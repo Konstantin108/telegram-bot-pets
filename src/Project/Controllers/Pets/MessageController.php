@@ -7,7 +7,7 @@ use Project\Dto\Telegram\Request\InputDataDto;
 class MessageController
 {
     //TODO продумать как инициализировать телеграм
-    // создать .env, config и DI
+    // организовать DI
     public function __construct()
     {
         //

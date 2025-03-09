@@ -3,12 +3,12 @@
 namespace Project\Router;
 
 use Project\Controllers\Pets\MessageController;
+use Project\Exceptions\MethodNotAllowedHttpException;
 use Project\Request\Request;
 
 class Router
 {
     public const string USE_BUTTONS = "use_buttons";
-    //TODO файлы с роутами нужно будет переработать
     private Request $request;
     private array $routes;
 
@@ -23,12 +23,22 @@ class Router
 
     /**
      * @return void
+     * @throws MethodNotAllowedHttpException
      */
     public function routing(): void
     {
         $route = $this->findRoute() ?? $this->setRoute();
         $controllerName = $route->controllerName;
         $actionName = $route->actionName;
+
+        //TODO нужно будет переработать то как я отлавливаю исключения
+        if ($this->request->getData()->method !== $route->method) {
+            throw MethodNotAllowedHttpException::buildMessage(
+                $this->request->getData()->method,
+                $route->routeName,
+                $route->method
+            );
+        }
 
         (new $controllerName())->$actionName($this->request->getData()->inputDataDto);
     }
@@ -38,7 +48,7 @@ class Router
      */
     private function setRoute(): Route
     {
-        return Route::post(self::USE_BUTTONS, [MessageController::class, "useButtonsMessage"]);
+        return Route::get(self::USE_BUTTONS, [MessageController::class, "useButtonsMessage"]);
     }
 
     /**

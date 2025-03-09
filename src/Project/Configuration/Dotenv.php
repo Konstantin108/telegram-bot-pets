@@ -2,8 +2,6 @@
 
 namespace Project\Configuration;
 
-use Project\Dumper\Dumper;
-
 class Dotenv
 {
     /**

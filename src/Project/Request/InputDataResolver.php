@@ -12,12 +12,14 @@ class InputDataResolver
     protected const string DEFAULT_ROUTE = "test_notification";
     protected string|null $input;
     protected array $get;
+    protected string $method;
 
     public function __construct()
     {
         $this->input = file_get_contents("php://input");
 //        $this->input = file_get_contents("../../bots/pets/msg.json");
         $this->get = $_GET;
+        $this->method = $_SERVER["REQUEST_METHOD"];
     }
 
     /**
@@ -27,6 +29,7 @@ class InputDataResolver
     {
         return new RequestDto(
             route: $this->route(),
+            method: strtolower($this->method),
             inputDataDto: $this->resolveInputData(),
             queryParamsDto: $this->resolveQueryParams()
         );

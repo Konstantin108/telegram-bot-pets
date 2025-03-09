@@ -11,7 +11,7 @@ class Config
     private Dotenv $dotenv;
     private array $configurations;
 
-    //TODO возможно путь до файлов должны быть в константах
+    //TODO возможно пути до файлов должны быть в константах
     private function __construct()
     {
         $this->dotenv = new Dotenv();
