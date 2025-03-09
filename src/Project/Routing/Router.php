@@ -1,6 +1,6 @@
 <?php
 
-namespace Project\Router;
+namespace Project\Routing;
 
 use Project\Controllers\Pets\MessageController;
 use Project\Exceptions\MethodNotAllowedHttpException;
