@@ -32,6 +32,7 @@ class Router
         $actionName = $route->actionName;
 
         //TODO нужно будет переработать то как я отлавливаю исключения
+        // возможно события происходят дважды
         if ($this->request->getData()->method !== $route->method) {
             throw MethodNotAllowedHttpException::buildMessage(
                 $this->request->getData()->method,
