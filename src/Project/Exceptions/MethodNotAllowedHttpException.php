@@ -17,7 +17,7 @@ class MethodNotAllowedHttpException extends \Exception
     ): MethodNotAllowedHttpException
     {
         return new self(sprintf(
-            "Роут %s не поддерживает метод %s. Поддерживаемый метод: %s",
+            "Роут \"%s\" не поддерживает метод \"%s\". Поддерживаемый метод: \"%s\"",
             $routeName,
             strtoupper($requestMethod),
             strtoupper($routeMethod)

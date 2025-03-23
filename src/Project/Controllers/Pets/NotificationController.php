@@ -4,6 +4,9 @@ namespace Project\Controllers\Pets;
 
 use JetBrains\PhpStorm\ArrayShape;
 use Project\Configuration\Config;
+use Project\Exceptions\ConnException;
+use Project\Exceptions\DbException;
+use Project\Keyboards\Pets\Keyboard;
 use Project\Models\Users\User;
 use Project\Scopes\TestMembersScope;
 use Project\Telegram\Telegram;
@@ -24,35 +27,27 @@ class NotificationController
     // реализовать DI
     // надо будет выносить логику из контроллеров в сервисы Message, Notification и т.д.
 
+    /**
+     * @return void
+     * @throws ConnException
+     * @throws DbException
+     */
     public function notifyTestMembers(): void
     {
         $config = (include __DIR__ . "/../../../config.php")["bots"]["pets"];
         $allowExtensionsArray = $config["allowExtensionsArray"];
         $cats = $config["cats"];
 
-        $defaultKeyboard = [
-            "keyboard" => [
-                [
-                    ["text" => "Обо мне"],
-                    ["text" => "Список команд"]
-                ],
-                [
-                    ["text" => "Курага"],
-                    ["text" => "Ватсон"],
-                    ["text" => "Василиса"]
-                ]
-            ],
-            "resize_keyboard" => true
-        ];
-
         //TODO исправить все конкатенации
+
+        //TODO все должнол быть вынесено в сервисы
 
         if (count($users = User::filter(new TestMembersScope())) > 0) {
             $dailyPhotoData = $this->getImageForDailyNotification($allowExtensionsArray, $cats);
             foreach ($users as $user) {
                 /** @var User $user */
                 $dailyNotifyMessage = "Скучаешь, {$user->getFirstName()}? Вот полюбуйся!";
-                $this->telegram->sendMessage($dailyNotifyMessage, $user->getChatId(), json_encode($defaultKeyboard));
+                $this->telegram->sendMessage($dailyNotifyMessage, $user->getChatId(), Keyboard::DEFAULT);
                 $this->showCatImage($user->getChatId(), $this->telegram, $dailyPhotoData);
             }
         }
@@ -122,6 +117,6 @@ class NotificationController
             ]
         ];
 
-        $telegram->sendPhoto($photoData, $chatId, json_encode($replyMarkup));
+        $telegram->sendPhoto($photoData, $chatId, $replyMarkup);
     }
 }

@@ -59,8 +59,8 @@ class Conn
     {
         $result = $this->exec($options);
 
-        if ($msg = curl_error($this->conn)) {
-            throw new ConnException($msg);
+        if ($message = curl_error($this->conn)) {
+            throw new ConnException($message);
         }
 
         if (!$result) {

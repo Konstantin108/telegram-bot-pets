@@ -17,7 +17,7 @@ class InputDataResolver
     public function __construct()
     {
         $this->input = file_get_contents("php://input");
-//        $this->input = file_get_contents("../../bots/pets/msg.json");
+//        $this->input = file_get_contents("../../bots/pets/message.json");
         $this->get = $_GET;
         $this->method = $_SERVER["REQUEST_METHOD"];
     }
