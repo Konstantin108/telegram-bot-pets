@@ -65,8 +65,8 @@ try {
             break;
     }
 
-} catch (ConnException $e) {
-    $e->show();
+} catch (ConnException $exception) {
+    $exception->show();
 }
 
 /**

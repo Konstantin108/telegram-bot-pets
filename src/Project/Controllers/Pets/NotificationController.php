@@ -13,7 +13,7 @@ use Project\Telegram\Telegram;
 
 class NotificationController
 {
-    public Telegram $telegram;
+    private Telegram $telegram;
 
     //TODO надо полностью переделать выброс исключений
 
@@ -26,6 +26,8 @@ class NotificationController
     // наследовать от BaseController
     // реализовать DI
     // надо будет выносить логику из контроллеров в сервисы Message, Notification и т.д.
+
+    //TODO почему нет анимации отправки картинки
 
     /**
      * @return void
@@ -59,7 +61,7 @@ class NotificationController
      * @return array{caption: \array|string|string[], photo: string}
      */
     #[ArrayShape(shape: ["caption" => "\array|string|string[]", "photo" => "string"])]
-    function getImageForDailyNotification(array $allowExtensionsArray, array $cats): array
+    private function getImageForDailyNotification(array $allowExtensionsArray, array $cats): array
     {
         $catNamesArray = [];
         foreach ($cats as $catName) {
@@ -75,7 +77,7 @@ class NotificationController
      * @return array{caption: array|string, photo: string}
      */
     #[ArrayShape(shape: ["caption" => "array|string|string[]", "photo" => "string"])]
-    function getRandomPhoto(string $catName, array $allowExtensionsArray): array
+    private function getRandomPhoto(string $catName, array $allowExtensionsArray): array
     {
         $files = [];
         foreach (scandir(__DIR__ . "/../../../../bots/pets/cats/$catName") as $file) {
@@ -100,7 +102,7 @@ class NotificationController
      * @return void
      * @throws ConnException
      */
-    function showCatImage(string $chatId, Telegram $telegram, array $photoData, null|array $replyMarkup = null): void
+    private function showCatImage(string $chatId, Telegram $telegram, array $photoData, null|array $replyMarkup = null): void
     {
         $replyMarkup ??= [
             "inline_keyboard" => [

@@ -3,11 +3,12 @@
 namespace Project\Controllers\Pets;
 
 use Project\Dto\Telegram\Request\InputDataDto;
+use Project\Exceptions\ConnException;
 use Project\Services\Pets\MessageService;
 
 class MessageController
 {
-    public MessageService $messageService;
+    private MessageService $messageService;
 
     //TODO организовать DI
     public function __construct()
@@ -18,6 +19,7 @@ class MessageController
     /**
      * @param InputDataDto $inputDataDto
      * @return void
+     * @throws ConnException
      */
     public function startBot(InputDataDto $inputDataDto): void
     {

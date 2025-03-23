@@ -176,8 +176,8 @@ class Telegram
             // возможно использовать глобальный handler для всех исключений
             throw new TelegramException(print_r($logDataDto, true));
 
-        } catch (TelegramException|DbException $e) {
-            $e->show();
+        } catch (TelegramException|DbException $exception) {
+            $exception->show();
         }
     }
 }

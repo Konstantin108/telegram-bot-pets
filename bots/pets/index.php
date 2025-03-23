@@ -60,8 +60,8 @@ try {
 
         try {
             (new UserController())->store($inputDataDto);
-        } catch (TypeErrorException $e) {
-            $e->show();
+        } catch (TypeErrorException $exception) {
+            $exception->show();
         }
 
         if (is_null($inputDataDto->text)) {
@@ -120,8 +120,9 @@ try {
         }
     }
 
-} catch (ConnException|DbException|AccessModifiersException $e) {
-    $e->show();
+    //TODO возможно неправильно ловлю исключения
+} catch (ConnException|DbException|AccessModifiersException $exception) {
+    $exception->show();
 }
 
 /**

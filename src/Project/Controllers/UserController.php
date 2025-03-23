@@ -43,10 +43,10 @@ class UserController
 
             $user->save();
 
-        } catch (DbException $e) {
-            $e->show();
-        } catch (TypeError $e) {
-            throw new TypeErrorException($e->getMessage());
+        } catch (DbException $exception) {
+            $exception->show();
+        } catch (TypeError $exception) {
+            throw new TypeErrorException($exception->getMessage());
         }
     }
 }

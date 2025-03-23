@@ -24,8 +24,8 @@ abstract class ActiveRecordEntity
         try {
             $camelCaseName = $this->underscoreToCamelCase($name);
             $this->$camelCaseName = $value;
-        } catch (Error $e) {
-            throw new AccessModifiersException($e->getMessage());
+        } catch (Error $error) {
+            throw new AccessModifiersException($error->getMessage());
         }
     }
 

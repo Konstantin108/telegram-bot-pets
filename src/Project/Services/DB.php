@@ -36,8 +36,8 @@ class DB
             return $PDOStatement
                 ? $PDOStatement->fetchAll(PDO::FETCH_CLASS, $className)
                 : null;
-        } catch (PDOException $e) {
-            throw new DbException($e->getMessage());
+        } catch (PDOException $exception) {
+            throw new DbException($exception->getMessage());
         }
     }
 
@@ -72,8 +72,8 @@ class DB
                     $this->config["password"],
                     $this->getOptions()
                 );
-            } catch (PDOException $e) {
-                throw new DbException($e->getMessage());
+            } catch (PDOException $exception) {
+                throw new DbException($exception->getMessage());
             }
         }
         return $this->conn;

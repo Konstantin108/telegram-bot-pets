@@ -11,7 +11,7 @@ use Project\Telegram\Telegram;
 class MessageService
 {
     //TODO проверить все константы долдны быть в начале классов
-    public Telegram $telegram;
+    private Telegram $telegram;
 
     public function __construct()
     {
