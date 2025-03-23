@@ -10,7 +10,6 @@ use Project\Telegram\Telegram;
 
 class MessageService
 {
-    //TODO проверить все константы долдны быть в начале классов
     private Telegram $telegram;
 
     public function __construct()
@@ -29,10 +28,41 @@ class MessageService
     }
 
     /**
+     * @param InputDataDto $inputDataDto
      * @return void
+     * @throws ConnException
      */
-    public function useButtonsMessage(): void
+    public function aboutBot(InputDataDto $inputDataDto): void
     {
-        //
+        $text = "Любимцы бот:\nЯ - простой бот, который умеет только показывать фотки шикарных котиков 😀";
+        $this->telegram->sendMessage($text, $inputDataDto->from->id, Keyboard::DEFAULT);
+    }
+
+    /**
+     * @param InputDataDto $inputDataDto
+     * @return void
+     * @throws ConnException
+     */
+    public function commandsList(InputDataDto $inputDataDto): void
+    {
+        //TODO переработать синтаксис строк
+        $text = "Привет, {$inputDataDto->from->firstName} {$inputDataDto->from->lastName}, вот команды, что я понимаю:"
+            . "\n<b><i>Обо мне</i></b> - информация обо мне"
+            . "\n<b><i>Список команд</i></b> - что я умею"
+            . "\n<b><i>Курага</i></b> - показать фото Кураги"
+            . "\n<b><i>Ватсон</i></b> - показать фото Ватсона"
+            . "\n<b><i>Василиса</i></b> - показать фото Василисы";
+
+        $this->telegram->sendMessage($text, $inputDataDto->from->id, Keyboard::DEFAULT);
+    }
+
+    /**
+     * @param InputDataDto $inputDataDto
+     * @return void
+     * @throws ConnException
+     */
+    public function useButtonsMessage(InputDataDto $inputDataDto): void
+    {
+        $this->telegram->sendMessage("Используй кнопки с командами", $inputDataDto->from->id, Keyboard::DEFAULT);
     }
 }

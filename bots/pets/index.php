@@ -47,7 +47,6 @@ $defaultKeyboard = [
             ["text" => "Василиса"]
         ]
     ],
-    //TODO возможно это как-то надо вынести в опции
     "resize_keyboard" => true
 ];
 
@@ -55,7 +54,6 @@ $inputDataDto = (new Request())->getData()->inputDataDto;
 
 try {
     if (!is_null($inputDataDto)) {
-        //TODO так быть не должно, надо выносить в методы
         $from = $inputDataDto->from;
 
         try {
@@ -69,7 +67,6 @@ try {
         }
 
         switch ($inputDataDto->text) {
-            //TODO возможно вынести названия действий в константы
             case "/start":
                 $telegram->sendMessage("Бот активирован", $inputDataDto->from->id, $defaultKeyboard);
                 break;

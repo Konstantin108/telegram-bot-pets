@@ -7,20 +7,20 @@ class MethodNotAllowedHttpException extends \Exception
     /**
      * @param string $requestMethod
      * @param string $routeName
-     * @param string $routeMethod
+     * @param string $allowedMethods
      * @return MethodNotAllowedHttpException
      */
     public static function buildMessage(
         string $requestMethod,
         string $routeName,
-        string $routeMethod
+        string $allowedMethods
     ): MethodNotAllowedHttpException
     {
         return new self(sprintf(
-            "Роут \"%s\" не поддерживает метод \"%s\". Поддерживаемый метод: \"%s\"",
+            "Роут \"%s\" не поддерживает метод %s. Поддерживаемые методы: %s.",
             $routeName,
             strtoupper($requestMethod),
-            strtoupper($routeMethod)
+            strtoupper($allowedMethods)
         ));
     }
 }

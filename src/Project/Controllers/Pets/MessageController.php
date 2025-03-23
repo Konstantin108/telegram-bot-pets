@@ -27,10 +27,32 @@ class MessageController
     }
 
     /**
+     * @param InputDataDto $inputDataDto
      * @return void
+     * @throws ConnException
      */
-    public function useButtonsMessage(): void
+    public function aboutBot(InputDataDto $inputDataDto): void
     {
-        //
+        $this->messageService->aboutBot($inputDataDto);
+    }
+
+    /**
+     * @param InputDataDto $inputDataDto
+     * @return void
+     * @throws ConnException
+     */
+    public function commandsList(InputDataDto $inputDataDto): void
+    {
+        $this->messageService->commandsList($inputDataDto);
+    }
+
+    /**
+     * @param InputDataDto $inputDataDto
+     * @return void
+     * @throws ConnException
+     */
+    public function useButtonsMessage(InputDataDto $inputDataDto): void
+    {
+        $this->messageService->useButtonsMessage($inputDataDto);
     }
 }

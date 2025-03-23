@@ -9,7 +9,9 @@ error_reporting(E_ALL);
 //error_reporting(E_ALL);
 //ini_set("error_log", "errors.log");
 
+use Project\Routing\Route;
 use Project\Routing\Router;
+use Project\Controllers\Pets\MessageController;
 
 spl_autoload_register(function (string $className): void {
     $className = str_replace("\\", DIRECTORY_SEPARATOR, $className);
@@ -25,4 +27,6 @@ spl_autoload_register(function (string $className): void {
 // - NotificationController
 
 $routes = require_once __DIR__ . "/routes.php";
-(new Router($routes))->routing();
+$anyInputTextRoute = Route::post("use_buttons", [MessageController::class, "useButtonsMessage"]);
+
+(new Router($routes, $anyInputTextRoute))->routing();
