@@ -5,7 +5,6 @@ namespace Project\Request;
 use Project\Dto\Request\QueryParamsDto;
 use Project\Dto\RequestDto;
 use Project\Dto\Telegram\Request\InputDataDto;
-use Project\Enums\Router\RouteEnum;
 
 class InputDataResolver
 {
@@ -13,12 +12,14 @@ class InputDataResolver
     protected const string DEFAULT_ROUTE = "test_notification";
     protected string|null $input;
     protected array $get;
+    protected string $method;
 
     public function __construct()
     {
         $this->input = file_get_contents("php://input");
-//        $this->input = file_get_contents("../../bots/pets/msg.json");
+//        $this->input = file_get_contents("../../bots/pets/message.json");
         $this->get = $_GET;
+        $this->method = $_SERVER["REQUEST_METHOD"];
     }
 
     /**
@@ -28,6 +29,7 @@ class InputDataResolver
     {
         return new RequestDto(
             route: $this->route(),
+            method: strtolower($this->method),
             inputDataDto: $this->resolveInputData(),
             queryParamsDto: $this->resolveQueryParams()
         );
@@ -65,16 +67,8 @@ class InputDataResolver
      */
     private function route(): string
     {
-        $requestRoute = $this->resolveQueryParams()->params["mode"]
+        return $this->resolveQueryParams()->params["mode"]
             ?? $this->resolveInputData()?->text
             ?? self::DEFAULT_ROUTE;
-
-        foreach (RouteEnum::cases() as $case) {
-            if ($case->value === $requestRoute) {
-                return $case->name();
-            }
-        }
-
-        return RouteEnum::USE_BUTTONS->name();
     }
 }

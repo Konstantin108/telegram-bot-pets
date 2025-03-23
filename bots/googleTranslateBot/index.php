@@ -54,14 +54,14 @@ try {
 
     switch ($text) {
         case "/start":
-            $telegram->sendMessage("Бот активирован", $from->id, json_encode($keyboard));
+            $telegram->sendMessage("Бот активирован", $from->id, $keyboard);
             break;
         case "ℹ обо мне":
             aboutBot($from->id, $telegram, $keyboard);
             break;
         default:
             $translatedText = GoogleTranslator::create()->translate($text);
-            $telegram->sendMessage($translatedText, $from->id, json_encode($keyboard));
+            $telegram->sendMessage($translatedText, $from->id, $keyboard);
             break;
     }
 
@@ -81,5 +81,5 @@ function aboutBot(string $chatId, Telegram $telegram, array $replyMarkup): void
     $text = "Умею переводить текст с английского языка на русский"
         . "\nДля перевода использую API Google Translate"
         . "\n\nПросто отправь мне текст на английском языке, и я тут же его переведу 👍";
-    $telegram->sendMessage($text, $chatId, json_encode($replyMarkup));
+    $telegram->sendMessage($text, $chatId, $replyMarkup);
 }

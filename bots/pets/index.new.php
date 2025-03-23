@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 //error_reporting(E_ALL);
 //ini_set("error_log", "errors.log");
 
-use Project\Router\Router;
+use Project\Routing\Router;
 
 spl_autoload_register(function (string $className): void {
     $className = str_replace("\\", DIRECTORY_SEPARATOR, $className);
@@ -22,5 +22,7 @@ spl_autoload_register(function (string $className): void {
 // - CallbackQueryController
 // - MyChatMemberController
 // - AdminActionController
+// - NotificationController
 
-Router::run()->routing();
+$routes = require_once __DIR__ . "/routes.php";
+(new Router($routes))->routing();

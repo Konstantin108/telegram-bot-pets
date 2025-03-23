@@ -3,18 +3,32 @@
 namespace Project\Controllers\Pets;
 
 use Project\Dto\Telegram\Request\InputDataDto;
+use Project\Services\Pets\MessageService;
 
 class MessageController
 {
-    //TODO продумать как инициализировать телеграм
-    // создать .env, config и DI
+    public MessageService $messageService;
+
+    //TODO организовать DI
     public function __construct()
     {
-
+        $this->messageService = new MessageService();
     }
 
-    public function startBot(InputDataDto $data): void
+    /**
+     * @param InputDataDto $inputDataDto
+     * @return void
+     */
+    public function startBot(InputDataDto $inputDataDto): void
     {
+        $this->messageService->startBot($inputDataDto);
+    }
 
+    /**
+     * @return void
+     */
+    public function useButtonsMessage(): void
+    {
+        //
     }
 }

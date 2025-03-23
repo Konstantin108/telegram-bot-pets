@@ -47,6 +47,7 @@ $defaultKeyboard = [
             ["text" => "Василиса"]
         ]
     ],
+    //TODO возможно это как-то надо вынести в опции
     "resize_keyboard" => true
 ];
 
@@ -70,7 +71,7 @@ try {
         switch ($inputDataDto->text) {
             //TODO возможно вынести названия действий в константы
             case "/start":
-                $telegram->sendMessage("Бот активирован", $inputDataDto->from->id, json_encode($defaultKeyboard));
+                $telegram->sendMessage("Бот активирован", $inputDataDto->from->id, $defaultKeyboard);
                 break;
             case "обо мне":
                 aboutBot($inputDataDto->from->id, $telegram, $defaultKeyboard);
@@ -90,7 +91,7 @@ try {
                         $notifyForAdmin = "$from->firstName $from->lastName сейчас любуется {$cats[$inputDataDto->text]["ru_ins"]}"
                             . "\nПоказано это замечательное фото 🤩";
 
-                        $telegram->sendMessage($notifyForAdmin, $oneAdminChatId, json_encode($defaultKeyboard));
+                        $telegram->sendMessage($notifyForAdmin, $oneAdminChatId, $defaultKeyboard);
                         showCatImage($oneAdminChatId, $telegram, $photoData, $defaultKeyboard);
                     }
                 }
@@ -102,7 +103,7 @@ try {
                 sendReactionToAdmin($inputDataDto->text, $from, $telegram, $config, $defaultKeyboard);
                 break;
             default:
-                $telegram->sendMessage("Используй кнопки с командами", $from->id, json_encode($defaultKeyboard));
+                $telegram->sendMessage("Используй кнопки с командами", $from->id, $defaultKeyboard);
                 break;
         }
     } else {
@@ -113,7 +114,7 @@ try {
             foreach ($users as $user) {
                 /** @var User $user */
                 $dailyNotifyMessage = "Скучаешь, {$user->getFirstName()}? Вот полюбуйся!";
-                $telegram->sendMessage($dailyNotifyMessage, $user->getChatId(), json_encode($defaultKeyboard));
+                $telegram->sendMessage($dailyNotifyMessage, $user->getChatId(), $defaultKeyboard);
                 showCatImage($user->getChatId(), $telegram, $dailyPhotoData);
             }
         }
@@ -133,7 +134,7 @@ try {
 function aboutBot(string $chatId, Telegram $telegram, array $replyMarkup): void
 {
     $text = "Любимцы бот:\nЯ - простой бот, который умеет только показывать фотки шикарных котиков 😀";
-    $telegram->sendMessage($text, $chatId, json_encode($replyMarkup));
+    $telegram->sendMessage($text, $chatId, $replyMarkup);
 }
 
 /**
@@ -152,7 +153,7 @@ function commandsList(FromDto $from, Telegram $telegram, array $replyMarkup): vo
         . "\n<b><i>Ватсон</i></b> - показать фото Ватсона"
         . "\n<b><i>Василиса</i></b> - показать фото Василисы";
 
-    $telegram->sendMessage($text, $from->id, json_encode($replyMarkup));
+    $telegram->sendMessage($text, $from->id, $replyMarkup);
 }
 
 /**
@@ -180,7 +181,7 @@ function showCatImage(string $chatId, Telegram $telegram, array $photoData, null
         ]
     ];
 
-    $telegram->sendPhoto($photoData, $chatId, json_encode($replyMarkup));
+    $telegram->sendPhoto($photoData, $chatId, $replyMarkup);
 }
 
 /**
@@ -243,7 +244,7 @@ function sendReactionToAdmin(string $text, FromDto $from, Telegram $telegram, ar
     if (!in_array($from->id, $config["adminChatIds"])) {
         foreach ($config["adminChatIds"] as $oneAdminChatId) {
             $notifyForAdmin = "$from->firstName $from->lastName $reactions[$text]";
-            $telegram->sendMessage($notifyForAdmin, $oneAdminChatId, json_encode($defaultKeyboard));
+            $telegram->sendMessage($notifyForAdmin, $oneAdminChatId, $defaultKeyboard);
         }
     }
 }

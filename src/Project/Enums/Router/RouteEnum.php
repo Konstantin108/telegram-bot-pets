@@ -4,6 +4,7 @@ namespace Project\Enums\Router;
 
 enum RouteEnum: string
 {
+    //TODO это не будет использоваться
     case START = "/start";
     case ABOUT_ME = "обо мне";
     case COMMANDS_LIST = "список команд";
@@ -21,6 +22,7 @@ enum RouteEnum: string
      */
     public function name(): string
     {
+        //TODO поправить названия методов и роутов
         return match ($this) {
             self::START => "start",     //startBot
             self::ABOUT_ME => "about-me",     //showAboutBotInfo
@@ -32,7 +34,7 @@ enum RouteEnum: string
             self::UNLIKE => "unlike",     //unlike
             self::TEST_NOTIFICATION => "test-notification",     //notifyTestMembers
             self::DAILY_NOTIFICATION => "daily-notification",     //notifyMembers
-            self::USE_BUTTONS => "use-buttons-msg"     //routeNotFound
+            self::USE_BUTTONS => "use-buttons-message"     //useButtonsMessage
         };
     }
 }

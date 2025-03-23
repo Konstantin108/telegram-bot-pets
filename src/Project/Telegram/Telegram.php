@@ -13,6 +13,7 @@ use Project\Services\Conn;
 
 class Telegram
 {
+    //TODO переделать получение URL
     private string $url;
     private string $token;
 
@@ -28,18 +29,19 @@ class Telegram
     /**
      * @param string $text
      * @param string $chatId
-     * @param string $replyMarkup
+     * @param array $replyMarkup
      * @return void
      * @throws ConnException
      */
-    public function sendMessage(string $text, string $chatId, string $replyMarkup = ""): void
+    public function sendMessage(string $text, string $chatId, array $replyMarkup = []): void
     {
+        //TODO значение по умолачнию будет не нужно
         $this->send(
             [
                 "chat_id" => $chatId,
                 "text" => $text,
                 "parse_mode" => "HTML",
-                "reply_markup" => $replyMarkup
+                "reply_markup" => json_encode($replyMarkup)
             ],
             $this->sendMessageEndpoint()
         );
@@ -48,18 +50,19 @@ class Telegram
     /**
      * @param array $photoData
      * @param string $chatId
-     * @param string $replyMarkup
+     * @param array $replyMarkup
      * @return void
      * @throws ConnException
      */
-    public function sendPhoto(array $photoData, string $chatId, string $replyMarkup = ""): void
+    public function sendPhoto(array $photoData, string $chatId, array $replyMarkup = []): void
     {
+        //TODO значение по умолачнию будет не нужно
         $this->send(
             [
                 "chat_id" => $chatId,
                 "photo" => curl_file_create($photoData["photo"]),
                 "caption" => $photoData["caption"],
-                "reply_markup" => $replyMarkup
+                "reply_markup" => json_encode($replyMarkup)
             ],
             $this->sendPhotoEndpoint()
         );
@@ -163,17 +166,15 @@ class Telegram
             $endpointArray = explode("/", $endpoint);
             $method = end($endpointArray);
 
-            throw new TelegramException(
-                print_r(
-                    new LogDataDto(
-                        response: $responseDto,
-                        messageData: $data,
-                        method: $method
-                    ),
-                    true
-                )
+            $logDataDto = new LogDataDto(
+                response: $responseDto,
+                messageData: $data,
+                method: $method
             );
 
+            //TODO возможно это нужно будет переделать
+            // возможно использовать глобальный handler для всех исключений
+            throw new TelegramException(print_r($logDataDto, true));
 
         } catch (TelegramException|DbException $e) {
             $e->show();
