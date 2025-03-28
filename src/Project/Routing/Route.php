@@ -90,6 +90,7 @@ class Route
     {
         [$controllerName, $actionName] = $controllerAndAction;
 
+        //TODO надо проверить, чтобы возвращался экземпляр с пустым массивом на месте методов
         return new self(
             routeName: $routeName,
             controllerName: $controllerName,

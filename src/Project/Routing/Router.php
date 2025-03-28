@@ -35,11 +35,7 @@ class Router
         //TODO нужно будет переработать то как я отлавливаю исключения
         // возможно события происходят дважды
         if (count($route->allowedMethods) > 0 && !in_array($this->request->getData()->method, $route->allowedMethods)) {
-            throw MethodNotAllowedHttpException::buildMessage(
-                $this->request->getData()->method,
-                $route->routeName,
-                implode(", ", $route->allowedMethods)
-            );
+            throw MethodNotAllowedHttpException::buildMessage($this->request->getData()->method, $route);
         }
 
         (new $controllerName())->$actionName($this->request->getData()->inputDataDto);

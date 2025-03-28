@@ -29,6 +29,9 @@ abstract class ActiveRecordEntity
         }
     }
 
+    //TODO надо проверить возможность передачи массива в where()
+    // утончить какой метод вернет мне модель, а какой массив
+
     /**
      * @param string $param
      * @param string $value
