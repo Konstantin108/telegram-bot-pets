@@ -22,6 +22,8 @@ class User extends ActiveRecordEntity
     protected string|null $updatedAt;
     protected string|null $deletedAt;
 
+    //TODO возможно переработать, убрать лишние методы
+
     /**
      * @param string $chatId
      */

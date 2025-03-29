@@ -2,25 +2,27 @@
 
 namespace Project\Exceptions;
 
+use Project\Routing\Route;
+
 class MethodNotAllowedHttpException extends \Exception
 {
+    //TODO мне еще надо код выбрасывать
+
     /**
      * @param string $requestMethod
-     * @param string $routeName
-     * @param string $routeMethod
+     * @param Route $route
      * @return MethodNotAllowedHttpException
      */
     public static function buildMessage(
         string $requestMethod,
-        string $routeName,
-        string $routeMethod
+        Route  $route,
     ): MethodNotAllowedHttpException
     {
         return new self(sprintf(
-            "Роут \"%s\" не поддерживает метод \"%s\". Поддерживаемый метод: \"%s\"",
-            $routeName,
+            "Роут \"%s\" не поддерживает метод %s. Поддерживаемые методы: %s.",
+            $route->routeName,
             strtoupper($requestMethod),
-            strtoupper($routeMethod)
+            strtoupper(implode(", ", $route->allowedMethods))
         ));
     }
 }

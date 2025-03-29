@@ -47,7 +47,6 @@ $defaultKeyboard = [
             ["text" => "Василиса"]
         ]
     ],
-    //TODO возможно это как-то надо вынести в опции
     "resize_keyboard" => true
 ];
 
@@ -55,13 +54,12 @@ $inputDataDto = (new Request())->getData()->inputDataDto;
 
 try {
     if (!is_null($inputDataDto)) {
-        //TODO так быть не должно, надо выносить в методы
         $from = $inputDataDto->from;
 
         try {
             (new UserController())->store($inputDataDto);
-        } catch (TypeErrorException $e) {
-            $e->show();
+        } catch (TypeErrorException $exception) {
+            $exception->show();
         }
 
         if (is_null($inputDataDto->text)) {
@@ -69,7 +67,6 @@ try {
         }
 
         switch ($inputDataDto->text) {
-            //TODO возможно вынести названия действий в константы
             case "/start":
                 $telegram->sendMessage("Бот активирован", $inputDataDto->from->id, $defaultKeyboard);
                 break;
@@ -120,8 +117,9 @@ try {
         }
     }
 
-} catch (ConnException|DbException|AccessModifiersException $e) {
-    $e->show();
+    //TODO возможно неправильно ловлю исключения
+} catch (ConnException|DbException|AccessModifiersException $exception) {
+    $exception->show();
 }
 
 /**

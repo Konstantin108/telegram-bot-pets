@@ -2,23 +2,24 @@
 
 namespace Project\Routing;
 
-use Project\Controllers\Pets\MessageController;
 use Project\Exceptions\MethodNotAllowedHttpException;
 use Project\Request\Request;
 
 class Router
 {
-    public const string USE_BUTTONS = "use_buttons";
     private Request $request;
     private array $routes;
+    private Route $anyInputTextRoute;
 
     /**
      * @param array $routes
+     * @param Route $anyInputTextRoute
      */
-    public function __construct(array $routes)
+    public function __construct(array $routes, Route $anyInputTextRoute)
     {
         $this->request = new Request();
         $this->routes = $routes;
+        $this->anyInputTextRoute = $anyInputTextRoute;
     }
 
     /**
@@ -27,29 +28,17 @@ class Router
      */
     public function routing(): void
     {
-        $route = $this->findRoute() ?? $this->setRoute();
+        $route = $this->findRoute() ?? $this->anyInputTextRoute;
         $controllerName = $route->controllerName;
         $actionName = $route->actionName;
 
         //TODO нужно будет переработать то как я отлавливаю исключения
         // возможно события происходят дважды
-        if ($this->request->getData()->method !== $route->method) {
-            throw MethodNotAllowedHttpException::buildMessage(
-                $this->request->getData()->method,
-                $route->routeName,
-                $route->method
-            );
+        if (count($route->allowedMethods) > 0 && !in_array($this->request->getData()->method, $route->allowedMethods)) {
+            throw MethodNotAllowedHttpException::buildMessage($this->request->getData()->method, $route);
         }
 
         (new $controllerName())->$actionName($this->request->getData()->inputDataDto);
-    }
-
-    /**
-     * @return Route
-     */
-    private function setRoute(): Route
-    {
-        return Route::get(self::USE_BUTTONS, [MessageController::class, "useButtonsMessage"]);
     }
 
     /**

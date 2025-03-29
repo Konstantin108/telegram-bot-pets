@@ -11,15 +11,43 @@ class Route
      * @param string $routeName
      * @param string $controllerName
      * @param string $actionName
-     * @param string $method
+     * @param array $allowedMethods
      */
     private function __construct(
         public string $routeName,
         public string $controllerName,
         public string $actionName,
-        public string $method,
+        public array  $allowedMethods,
     )
     {
+    }
+
+    /**
+     * @param string $routeName
+     * @param array $controllerAndAction
+     * @return Route
+     */
+    public static function any(
+        string $routeName,
+        array  $controllerAndAction,
+    ): Route
+    {
+        return self::setRoute($routeName, $controllerAndAction);
+    }
+
+    /**
+     * @param array $allowedMethods
+     * @param string $routeName
+     * @param array $controllerAndAction
+     * @return Route
+     */
+    public static function match(
+        array  $allowedMethods,
+        string $routeName,
+        array  $controllerAndAction
+    ): Route
+    {
+        return self::setRoute($routeName, $controllerAndAction, ...$allowedMethods);
     }
 
     /**
@@ -51,22 +79,23 @@ class Route
     /**
      * @param string $routeName
      * @param array $controllerAndAction
-     * @param string $method
+     * @param string ...$allowedMethods
      * @return Route
      */
     private static function setRoute(
         string $routeName,
         array  $controllerAndAction,
-        string $method
+        string ...$allowedMethods
     ): Route
     {
         [$controllerName, $actionName] = $controllerAndAction;
 
+        //TODO надо проверить, чтобы возвращался экземпляр с пустым массивом на месте методов
         return new self(
             routeName: $routeName,
             controllerName: $controllerName,
             actionName: $actionName,
-            method: $method
+            allowedMethods: array_map(fn(mixed $method) => $method, $allowedMethods)
         );
     }
 }

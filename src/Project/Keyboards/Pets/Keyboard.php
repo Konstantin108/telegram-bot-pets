@@ -7,8 +7,7 @@ class Keyboard
     public const array DEFAULT = [
         "keyboard" => [
             [
-                ["text" => "Обо мне"],
-                ["text" => "Список команд"]
+                ["text" => "Обо мне"]
             ],
             [
                 ["text" => "Курага"],

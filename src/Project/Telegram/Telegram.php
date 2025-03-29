@@ -9,7 +9,7 @@ use Project\Exceptions\ConnException;
 use Project\Exceptions\DbException;
 use Project\Exceptions\TelegramException;
 use Project\Models\Users\User;
-use Project\Services\Conn;
+use Project\Services\Connection\Conn;
 
 class Telegram
 {
@@ -67,6 +67,8 @@ class Telegram
             $this->sendPhotoEndpoint()
         );
     }
+
+    //TODO переработать отправку действия боту
 
     /**
      * @param string $chatId
@@ -158,7 +160,7 @@ class Telegram
             }
 
             if ($responseDto->errorCode->isBlocked()) {
-                $user = User::where("chat_id", $data["chat_id"]);
+                $user = User::first("chat_id", $data["chat_id"]);
                 $user->setStatus(UserStatusEnum::KICKED);
                 $user->save();
             }
@@ -176,8 +178,8 @@ class Telegram
             // возможно использовать глобальный handler для всех исключений
             throw new TelegramException(print_r($logDataDto, true));
 
-        } catch (TelegramException|DbException $e) {
-            $e->show();
+        } catch (TelegramException|DbException $exception) {
+            $exception->show();
         }
     }
 }

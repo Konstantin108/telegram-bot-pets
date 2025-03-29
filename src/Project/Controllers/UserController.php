@@ -18,6 +18,7 @@ class UserController
     }
 
     //TODO почему нет метода update
+    // дорабоотать на случай если админов будет несколько
 
     /**
      * @param InputDataDto $inputDataDto
@@ -27,7 +28,7 @@ class UserController
     public function store(InputDataDto $inputDataDto): void
     {
         try {
-            if (is_null($user = User::where("chat_id", $inputDataDto->from->id))) {
+            if (is_null($user = User::first("chat_id", $inputDataDto->from->id))) {
                 $user = new User();
                 $user->setChatId($inputDataDto->from->id);
             }
@@ -43,10 +44,10 @@ class UserController
 
             $user->save();
 
-        } catch (DbException $e) {
-            $e->show();
-        } catch (TypeError $e) {
-            throw new TypeErrorException($e->getMessage());
+        } catch (DbException $exception) {
+            $exception->show();
+        } catch (TypeError $exception) {
+            throw new TypeErrorException($exception->getMessage());
         }
     }
 }

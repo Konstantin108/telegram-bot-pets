@@ -10,8 +10,7 @@ use Project\Telegram\Telegram;
 
 class MessageService
 {
-    //TODO проверить все константы долдны быть в начале классов
-    public Telegram $telegram;
+    private Telegram $telegram;
 
     public function __construct()
     {
@@ -28,11 +27,26 @@ class MessageService
         $this->telegram->sendMessage("Бот активирован", $inputDataDto->from->id, Keyboard::DEFAULT);
     }
 
+    //TODO будут не только коты, надо это учесть
+
     /**
+     * @param InputDataDto $inputDataDto
      * @return void
+     * @throws ConnException
      */
-    public function useButtonsMessage(): void
+    public function aboutBot(InputDataDto $inputDataDto): void
     {
-        //
+        $text = "Любимцы бот:\nЯ - простой бот, который умеет показывать фотки любимцов 😀";
+        $this->telegram->sendMessage($text, $inputDataDto->from->id, Keyboard::DEFAULT);
+    }
+
+    /**
+     * @param InputDataDto $inputDataDto
+     * @return void
+     * @throws ConnException
+     */
+    public function useButtonsMessage(InputDataDto $inputDataDto): void
+    {
+        $this->telegram->sendMessage("Используй кнопки с командами", $inputDataDto->from->id, Keyboard::DEFAULT);
     }
 }

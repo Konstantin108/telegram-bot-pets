@@ -1,6 +1,6 @@
 <?php
 
-namespace Project\Services;
+namespace Project\Services\Database;
 
 use JetBrains\PhpStorm\ArrayShape;
 use PDO;
@@ -19,7 +19,7 @@ class DB
 
     private function __construct()
     {
-        $this->config = (require __DIR__ . "/../../config.php")["bots"]["pets"]["db"];
+        $this->config = (require __DIR__ . "/../../../config.php")["bots"]["pets"]["db"];
     }
 
     /**
@@ -36,8 +36,8 @@ class DB
             return $PDOStatement
                 ? $PDOStatement->fetchAll(PDO::FETCH_CLASS, $className)
                 : null;
-        } catch (PDOException $e) {
-            throw new DbException($e->getMessage());
+        } catch (PDOException $exception) {
+            throw new DbException($exception->getMessage());
         }
     }
 
@@ -72,8 +72,8 @@ class DB
                     $this->config["password"],
                     $this->getOptions()
                 );
-            } catch (PDOException $e) {
-                throw new DbException($e->getMessage());
+            } catch (PDOException $exception) {
+                throw new DbException($exception->getMessage());
             }
         }
         return $this->conn;

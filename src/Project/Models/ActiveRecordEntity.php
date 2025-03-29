@@ -3,10 +3,11 @@
 namespace Project\Models;
 
 use Error;
+use Project\Enums\DB\OperatorEnum;
 use Project\Exceptions\AccessModifiersException;
 use Project\Exceptions\DbException;
 use Project\Scopes\ScopeInterface;
-use Project\Services\DB;
+use Project\Services\Database\DB;
 use ReflectionObject;
 
 abstract class ActiveRecordEntity
@@ -15,7 +16,7 @@ abstract class ActiveRecordEntity
 
     /**
      * @param string $name
-     * @param ?string $value
+     * @param string|null $value
      * @return void
      * @throws AccessModifiersException
      */
@@ -24,27 +25,44 @@ abstract class ActiveRecordEntity
         try {
             $camelCaseName = $this->underscoreToCamelCase($name);
             $this->$camelCaseName = $value;
-        } catch (Error $e) {
-            throw new AccessModifiersException($e->getMessage());
+        } catch (Error $error) {
+            throw new AccessModifiersException($error->getMessage());
         }
     }
 
     /**
      * @param string $param
      * @param string $value
-     * @return mixed|null
+     * @param string|null $operator
+     * @return mixed
      * @throws DbException
      */
-    public static function where(string $param, string $value): mixed
+    public static function first(string $param, string $value, string $operator = null): mixed
     {
-        $result = static::getDB()->query(
-            "/** @lang text */SELECT * FROM `" . static::getTableName() . "` WHERE `$param` = :$param;",
-            [$param => $value],
-            static::class
-        );
-        return $result
-            ? array_shift($result)
-            : null;
+        return static::search($param, $value, $operator, true);
+    }
+
+    /**
+     * @param string $param
+     * @param string $value
+     * @param string|null $operator
+     * @return mixed
+     * @throws DbException
+     */
+    public static function where(string $param, string $value, string $operator = null): mixed
+    {
+        return static::search($param, $value, $operator);
+    }
+
+    /**
+     * @param string $param
+     * @param string $value
+     * @return mixed
+     * @throws DbException
+     */
+    public static function like(string $param, string $value): mixed
+    {
+        return static::search($param, $value, OperatorEnum::LIKE->value);
     }
 
     /**
@@ -54,7 +72,29 @@ abstract class ActiveRecordEntity
      */
     public static function getById(int $id): mixed
     {
-        return static::where("id", $id);
+        return static::first("id", $id);
+    }
+
+    /**
+     * @param string $param
+     * @param array $values
+     * @return bool|array|null
+     * @throws DbException
+     */
+    public static function whereIn(string $param, array $values): bool|array|null
+    {
+        return static::searchInArray($param, $values);
+    }
+
+    /**
+     * @param string $param
+     * @param array $values
+     * @return bool|array|null
+     * @throws DbException
+     */
+    public static function whereNotIn(string $param, array $values): bool|array|null
+    {
+        return static::searchInArray($param, $values, true);
     }
 
     /**
@@ -64,7 +104,7 @@ abstract class ActiveRecordEntity
      */
     public static function filter(ScopeInterface ...$scopes): bool|array|null
     {
-        $filter = "";
+        $filter = " WHERE 1=1";
         $values = [];
         if (count($scopes) > 0) {
             foreach ($scopes as $scope) {
@@ -118,11 +158,61 @@ abstract class ActiveRecordEntity
      */
     private static function list(string $filter = "", array $values = []): bool|array|null
     {
-        return static::getDB()->query(
-            "/** @lang text */SELECT * FROM `" . static::getTableName() . "` WHERE 1=1$filter;",
-            $values,
-            static::class
+        $sql = sprintf(
+            "/** @lang text */SELECT * FROM `%s`%s;",
+            static::getTableName(),
+            $filter
         );
+
+        return static::getDB()->query($sql, $values, static::class);
+    }
+
+    /**
+     * @param string $param
+     * @param string $value
+     * @param string|null $operator
+     * @param bool $getFirst
+     * @return mixed|null
+     * @throws DbException
+     */
+    private static function search(string $param, string $value, ?string $operator, bool $getFirst = false): mixed
+    {
+        $sql = sprintf(
+            "/** @lang text */SELECT * FROM `%s` WHERE `%s` %s :%s;",
+            static::getTableName(),
+            $param,
+            $operator ?? OperatorEnum::EQ->value,
+            $param
+        );
+
+        $result = static::getDB()->query($sql, [$param => $value], static::class);
+
+        if (!$getFirst) {
+            return $result;
+        }
+
+        return $result
+            ? array_shift($result)
+            : null;
+    }
+
+    /**
+     * @param string $param
+     * @param array $values
+     * @param bool $not
+     * @return bool|array|null
+     * @throws DbException
+     */
+    private static function searchInArray(string $param, array $values, bool $not = false): bool|array|null
+    {
+        $filter = sprintf(
+            " WHERE `%s`%s IN (%s)",
+            $param,
+            $not ? " NOT" : "",
+            rtrim(str_repeat("?, ", count($values)), ", ")
+        );
+
+        return static::list($filter, $values);
     }
 
     /**
@@ -183,7 +273,14 @@ abstract class ActiveRecordEntity
             $fields[] = "`$fieldName` = :$fieldName";
             $values[$fieldName] = $value;
         }
-        $sql = "UPDATE `" . static::getTableName() . "` SET " . implode(", ", $fields) . " WHERE `id` = $this->id;";
+
+        $sql = sprintf(
+            "/** @lang text */UPDATE `%s` SET %s WHERE `id` = %d;",
+            static::getTableName(),
+            implode(", ", $fields),
+            $this->id
+        );
+
         static::getDB()->query($sql, $values, static::class);
     }
 
