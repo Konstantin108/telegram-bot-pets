@@ -10,4 +10,5 @@ enum OperatorEnum: string
     case LT = "<";
     case GE = ">=";
     case LE = "<=";
+    case LIKE = "LIKE";
 }

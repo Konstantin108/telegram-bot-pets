@@ -68,6 +68,8 @@ class Telegram
         );
     }
 
+    //TODO переработать отправку действия боту
+
     /**
      * @param string $chatId
      * @param string $action
@@ -158,7 +160,7 @@ class Telegram
             }
 
             if ($responseDto->errorCode->isBlocked()) {
-                $user = User::where("chat_id", $data["chat_id"]);
+                $user = User::first("chat_id", $data["chat_id"]);
                 $user->setStatus(UserStatusEnum::KICKED);
                 $user->save();
             }
