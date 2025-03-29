@@ -3,7 +3,7 @@
 namespace Project\GoogleApi;
 
 use Project\Exceptions\ConnException;
-use Project\Services\Conn;
+use Project\Services\Connection\Conn;
 use Project\Traits\SingletonTrait;
 
 class GoogleTranslator

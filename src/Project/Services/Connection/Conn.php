@@ -1,6 +1,6 @@
 <?php
 
-namespace Project\Services;
+namespace Project\Services\Connection;
 
 use CurlHandle;
 use Project\Exceptions\ConnException;

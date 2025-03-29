@@ -6,7 +6,7 @@ use Error;
 use Project\Exceptions\AccessModifiersException;
 use Project\Exceptions\DbException;
 use Project\Scopes\ScopeInterface;
-use Project\Services\DB;
+use Project\Services\Database\DB;
 use ReflectionObject;
 
 abstract class ActiveRecordEntity
@@ -38,8 +38,10 @@ abstract class ActiveRecordEntity
      * @return mixed|null
      * @throws DbException
      */
-    public static function where(string $param, string $value): mixed
+    public static function where(string $param, string $value,  $operator = null): mixed
     {
+
+
         $result = static::getDB()->query(
             "/** @lang text */SELECT * FROM `" . static::getTableName() . "` WHERE `$param` = :$param;",
             [$param => $value],

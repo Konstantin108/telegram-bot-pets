@@ -9,7 +9,7 @@ use Project\Exceptions\ConnException;
 use Project\Exceptions\DbException;
 use Project\Exceptions\TelegramException;
 use Project\Models\Users\User;
-use Project\Services\Conn;
+use Project\Services\Connection\Conn;
 
 class Telegram
 {

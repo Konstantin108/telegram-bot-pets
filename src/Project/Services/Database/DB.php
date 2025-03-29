@@ -1,6 +1,6 @@
 <?php
 
-namespace Project\Services;
+namespace Project\Services\Database;
 
 use JetBrains\PhpStorm\ArrayShape;
 use PDO;
@@ -19,7 +19,7 @@ class DB
 
     private function __construct()
     {
-        $this->config = (require __DIR__ . "/../../config.php")["bots"]["pets"]["db"];
+        $this->config = (require __DIR__ . "/../../../config.php")["bots"]["pets"]["db"];
     }
 
     /**
