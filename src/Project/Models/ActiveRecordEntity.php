@@ -140,17 +140,17 @@ abstract class ActiveRecordEntity
     }
 
     /**
-     * @return bool|array|null
+     * @return void
      * @throws DbException
      */
-    public function delete(): bool|array|null
+    public function delete(): void
     {
         $sql = sprintf(
             "/** @lang text */DELETE FROM `%s` WHERE `id` = :id",
             static::table(),
         );
 
-        return static::getDB()->query($sql, ["id" => $this->id], static::class);
+        static::getDB()->query($sql, ["id" => $this->id], static::class);
     }
 
     /**
@@ -270,7 +270,7 @@ abstract class ActiveRecordEntity
      * @return void
      * @throws DbException
      */
-    private function refresh(): void
+    protected function refresh(): void
     {
         $objectFromDb = static::getById($this->id);
         $reflector = new ReflectionObject($objectFromDb);

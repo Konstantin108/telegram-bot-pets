@@ -7,11 +7,11 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use Project\Exceptions\DbException;
-use Project\Traits\SingletonTrait;
+use Project\Traits\SingletonTrait as HasSingleton;
 
 class DB
 {
-    use SingletonTrait;
+    use HasSingleton;
 
     private static null|DB $instance = null;
     private mixed $config;

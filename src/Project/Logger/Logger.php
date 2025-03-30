@@ -2,11 +2,11 @@
 
 namespace Project\Logger;
 
-use Project\Traits\SingletonTrait;
+use Project\Traits\SingletonTrait as HasSingleton;
 
 class Logger
 {
-    use SingletonTrait;
+    use HasSingleton;
 
     private bool $writeLog;
     private string $logFile;

@@ -2,11 +2,11 @@
 
 namespace Project\Configuration;
 
-use Project\Traits\SingletonTrait;
+use Project\Traits\SingletonTrait as HasSingleton;
 
 class Config
 {
-    use SingletonTrait;
+    use HasSingleton;
 
     private Dotenv $dotenv;
     private array $configurations;
@@ -54,7 +54,6 @@ class Config
             $this->configurations[$configKey] = require $config;
         }
     }
-
 
     /**
      * @param string $key

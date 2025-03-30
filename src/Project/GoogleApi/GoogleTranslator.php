@@ -4,11 +4,11 @@ namespace Project\GoogleApi;
 
 use Project\Exceptions\ConnException;
 use Project\Services\Connection\Conn;
-use Project\Traits\SingletonTrait;
+use Project\Traits\SingletonTrait as HasSingleton;
 
 class GoogleTranslator
 {
-    use SingletonTrait;
+    use HasSingleton;
 
     private string $url;
     private array $options;

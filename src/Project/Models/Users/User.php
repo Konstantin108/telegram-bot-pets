@@ -4,9 +4,12 @@ namespace Project\Models\Users;
 
 use Project\Enums\User\UserStatusEnum;
 use Project\Models\ActiveRecordEntity;
+use Project\Traits\SoftDeletesTrait as HasSoftDeletes;
 
 class User extends ActiveRecordEntity
 {
+    use HasSoftDeletes;
+
     private const string TABLE = "users";
     private const array GUARDED = ["id"];
     protected int $id;
