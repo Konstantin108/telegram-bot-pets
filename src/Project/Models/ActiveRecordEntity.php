@@ -140,6 +140,20 @@ abstract class ActiveRecordEntity
     }
 
     /**
+     * @return bool|array|null
+     * @throws DbException
+     */
+    public function delete(): bool|array|null
+    {
+        $sql = sprintf(
+            "/** @lang text */DELETE FROM `%s` WHERE `id` = :id",
+            static::table(),
+        );
+
+        return static::getDB()->query($sql, ["id" => $this->id], static::class);
+    }
+
+    /**
      * @return string
      */
     abstract protected static function table(): string;
