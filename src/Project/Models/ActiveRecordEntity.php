@@ -132,6 +132,8 @@ abstract class ActiveRecordEntity
      */
     public function save(): void
     {
+        //TODO надо будет переделать save() и update() - будут разными методами
+        // не нужно чтобы каждый раз происходило обновление записи
         empty($this->id)
             ? $this->insert()
             : $this->update();
@@ -140,7 +142,12 @@ abstract class ActiveRecordEntity
     /**
      * @return string
      */
-    abstract protected static function getTableName(): string;
+    abstract protected static function table(): string;
+
+    /**
+     * @return array
+     */
+    abstract protected static function guarded(): array;
 
     /**
      * @return DB
@@ -160,7 +167,7 @@ abstract class ActiveRecordEntity
     {
         $sql = sprintf(
             "/** @lang text */SELECT * FROM `%s`%s;",
-            static::getTableName(),
+            static::table(),
             $filter
         );
 
@@ -179,7 +186,7 @@ abstract class ActiveRecordEntity
     {
         $sql = sprintf(
             "/** @lang text */SELECT * FROM `%s` WHERE `%s` %s :%s;",
-            static::getTableName(),
+            static::table(),
             $param,
             $operator ?? OperatorEnum::EQ->value,
             $param
@@ -222,6 +229,7 @@ abstract class ActiveRecordEntity
     private function insert(): void
     {
         $fields = $values = $columns = [];
+
         foreach ($this as $fieldName => $value) {
             if (is_null($value)) {
                 continue;
@@ -231,12 +239,14 @@ abstract class ActiveRecordEntity
             $values[$fieldName] = $value;
             $columns[] = "`$fieldName`";
         }
+
         $sql = sprintf(
             "/** @lang text */INSERT INTO `%s` (%s) VALUES (%s);",
-            static::getTableName(),
+            static::table(),
             implode(", ", $columns),
             implode(", ", $fields)
         );
+
         static::getDB()->query($sql, $values, static::class);
         $this->id = static::getDB()->getLastInsertId();
         $this->refresh();
@@ -265,20 +275,25 @@ abstract class ActiveRecordEntity
     private function update(): void
     {
         $fields = $values = [];
+        $fieldId = "id";
+        $guarded = static::guarded();
+
         foreach ($this as $fieldName => $value) {
-            if ($fieldName === "id") {
+            if (in_array($fieldName, $guarded)) {
                 continue;
             }
             $fieldName = $this->camelCaseToUnderscore($fieldName);
             $fields[] = "`$fieldName` = :$fieldName";
             $values[$fieldName] = $value;
         }
+        $values[$fieldId] = $this->id;
 
         $sql = sprintf(
-            "/** @lang text */UPDATE `%s` SET %s WHERE `id` = %d;",
-            static::getTableName(),
+            "/** @lang text */UPDATE `%s` SET %s WHERE `%s` = :%s;",
+            static::table(),
             implode(", ", $fields),
-            $this->id
+            $fieldId,
+            $fieldId
         );
 
         static::getDB()->query($sql, $values, static::class);

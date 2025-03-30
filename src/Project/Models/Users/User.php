@@ -7,6 +7,8 @@ use Project\Models\ActiveRecordEntity;
 
 class User extends ActiveRecordEntity
 {
+    private const string TABLE = "users";
+    private const array GUARDED = ["id"];
     protected int $id;
     protected string $chatId;
     protected bool|null $isBot;
@@ -121,8 +123,19 @@ class User extends ActiveRecordEntity
         return $this->lastName;
     }
 
-    protected static function getTableName(): string
+    /**
+     * @return string
+     */
+    protected static function table(): string
     {
-        return "users";
+        return static::TABLE;
+    }
+
+    /**
+     * @return array|string[]
+     */
+    protected static function guarded(): array
+    {
+        return static::GUARDED;
     }
 }

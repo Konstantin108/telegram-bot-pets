@@ -24,15 +24,15 @@ class DB
 
     /**
      * @param string $sql
-     * @param array $params
+     * @param array $values
      * @param string $className
      * @return array|false|null
      * @throws DbException
      */
-    public function query(string $sql, array $params = [], string $className = "stdClass"): bool|array|null
+    public function query(string $sql, array $values = [], string $className = "stdClass"): bool|array|null
     {
         try {
-            $PDOStatement = $this->exec($sql, $params);
+            $PDOStatement = $this->exec($sql, $values);
             return $PDOStatement
                 ? $PDOStatement->fetchAll(PDO::FETCH_CLASS, $className)
                 : null;
@@ -107,14 +107,14 @@ class DB
 
     /**
      * @param string $sql
-     * @param array $params
+     * @param array $values
      * @return bool|PDOStatement|null
      * @throws DbException
      */
-    private function exec(string $sql, array $params = []): bool|PDOStatement|null
+    private function exec(string $sql, array $values = []): bool|PDOStatement|null
     {
         $PDOStatement = $this->getConnection()->prepare($sql);
-        return $PDOStatement->execute($params)
+        return $PDOStatement->execute($values)
             ? $PDOStatement
             : null;
     }
