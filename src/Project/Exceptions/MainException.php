@@ -17,7 +17,7 @@ abstract class MainException extends Exception
      */
     public function show(): void
     {
-        Logger::create()->log($this->__toString());
+        Logger::log($this->__toString());
 
         echo "<pre>";
         print_r($this->__toString());
