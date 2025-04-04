@@ -20,7 +20,7 @@ abstract class ActiveRecordEntity
      * @return void
      * @throws AccessModifiersException
      */
-    public function __set(string $name, string|null $value = "")
+    public function __set(string $name, string|null $value = ""): void
     {
         try {
             $camelCaseName = $this->underscoreToCamelCase($name);

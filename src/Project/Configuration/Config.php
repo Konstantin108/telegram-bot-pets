@@ -40,13 +40,13 @@ class Config
     }
 
     /**
-     * @return void|null
+     * @return void
      */
-    private function configuration()
+    private function configuration(): void
     {
         $path = __DIR__ . "/../../../config";
         if (count($configs = glob($path . "/*.php")) < 1) {
-            return null;
+            return;
         }
 
         foreach ($configs as $config) {
