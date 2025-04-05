@@ -30,6 +30,9 @@ abstract class ActiveRecordEntity
         }
     }
 
+    //TODO нужно добавить пармаметр в который буду записывать полученные из базы данных
+    // возвращать буду данные из этого параметра в массиве или одним объектом
+
     /**
      * @param string $param
      * @param string $value
@@ -73,6 +76,26 @@ abstract class ActiveRecordEntity
     public static function getById(int $id): mixed
     {
         return static::first("id", $id);
+    }
+
+    /**
+     * @param string $param
+     * @return mixed|null
+     * @throws DbException
+     */
+    public static function whereNull(string $param): mixed
+    {
+        return static::search($param, null, OperatorEnum::IS->value);
+    }
+
+    /**
+     * @param string $param
+     * @return mixed
+     * @throws DbException
+     */
+    public static function whereNotNull(string $param): mixed
+    {
+        return static::search($param, null, OperatorEnum::IS_NOT->value);
     }
 
     /**
@@ -190,13 +213,13 @@ abstract class ActiveRecordEntity
 
     /**
      * @param string $param
-     * @param string $value
+     * @param string|null $value
      * @param string|null $operator
      * @param bool $getFirst
      * @return mixed|null
      * @throws DbException
      */
-    private static function search(string $param, string $value, ?string $operator, bool $getFirst = false): mixed
+    private static function search(string $param, ?string $value, ?string $operator, bool $getFirst = false): mixed
     {
         $sql = sprintf(
             "/** @lang text */SELECT * FROM `%s` WHERE `%s` %s :%s;",

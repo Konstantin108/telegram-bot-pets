@@ -13,4 +13,6 @@ abstract class AbstractScope implements ScopeInterface
     protected const string GE = OperatorEnum::GE->value;
     protected const string LE = OperatorEnum::LE->value;
     protected const string LIKE = OperatorEnum::LIKE->value;
+    protected const string IS = OperatorEnum::IS->value;
+    protected const string IS_NOT = OperatorEnum::IS_NOT->value;
 }
