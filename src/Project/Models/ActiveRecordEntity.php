@@ -73,10 +73,12 @@ abstract class ActiveRecordEntity
      * @return mixed
      * @throws DbException
      */
-    public static function getById(int $id): mixed
+    public static function find(int $id): mixed
     {
         return static::first("id", $id);
     }
+
+    //TODO добавить forceDelete() и firstOrFail(), так же проверять чтобы возвращался не null
 
     /**
      * @param string $param
@@ -106,7 +108,7 @@ abstract class ActiveRecordEntity
      */
     public static function whereIn(string $param, array $values): bool|array|null
     {
-        return static::searchInArray($param, $values);
+        return static::searchIn($param, $values);
     }
 
     /**
@@ -117,7 +119,7 @@ abstract class ActiveRecordEntity
      */
     public static function whereNotIn(string $param, array $values): bool|array|null
     {
-        return static::searchInArray($param, $values, true);
+        return static::searchIn($param, $values, true);
     }
 
     /**
@@ -125,7 +127,7 @@ abstract class ActiveRecordEntity
      * @return array|bool|null
      * @throws DbException
      */
-    public static function filter(ScopeInterface ...$scopes): bool|array|null
+    public static function scoped(ScopeInterface ...$scopes): bool|array|null
     {
         $filter = " WHERE 1=1";
         $values = [];
@@ -247,7 +249,7 @@ abstract class ActiveRecordEntity
      * @return bool|array|null
      * @throws DbException
      */
-    private static function searchInArray(string $param, array $values, bool $not = false): bool|array|null
+    private static function searchIn(string $param, array $values, bool $not = false): bool|array|null
     {
         $filter = sprintf(
             " WHERE `%s`%s IN (%s)",
@@ -295,7 +297,7 @@ abstract class ActiveRecordEntity
      */
     protected function refresh(): void
     {
-        $objectFromDb = static::getById($this->id);
+        $objectFromDb = static::find($this->id);
         $reflector = new ReflectionObject($objectFromDb);
         $properties = $reflector->getProperties();
 

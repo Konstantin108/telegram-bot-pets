@@ -36,7 +36,7 @@ class NotificationService
         // все должнол быть вынесено в сервисы
         // надо избавиться от include и require
 
-        if (count($users = User::filter(new TestMembersScope())) > 0) {
+        if (count($users = User::scoped(new TestMembersScope())) > 0) {
             $dailyPhotoData = $this->getImageForDailyNotification($allowExtensionsArray, $cats);
             foreach ($users as $user) {
                 /** @var User $user */
@@ -60,7 +60,7 @@ class NotificationService
         $allowExtensionsArray = $config["allowExtensionsArray"];
         $cats = $config["cats"];
 
-        if (count($users = User::filter(new MembersWithNotificationScope())) > 0) {
+        if (count($users = User::scoped(new MembersWithNotificationScope())) > 0) {
             $dailyPhotoData = $this->getImageForDailyNotification($allowExtensionsArray, $cats);
             foreach ($users as $user) {
                 /** @var User $user */
