@@ -160,7 +160,7 @@ class Telegram
             }
 
             if ($responseDto->errorCode->isBlocked()) {
-                $user = User::first("chat_id", $data["chat_id"]);
+                $user = User::firstWhere("chat_id", $data["chat_id"]);
                 $user->setStatus(UserStatusEnum::KICKED);
                 $user->save();
             }

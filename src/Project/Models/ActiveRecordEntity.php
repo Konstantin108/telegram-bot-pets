@@ -40,7 +40,7 @@ abstract class ActiveRecordEntity
      * @return mixed
      * @throws DbException
      */
-    public static function first(string $param, string $value, string $operator = null): mixed
+    public static function firstWhere(string $param, string $value, ?string $operator = null): mixed
     {
         return static::search($param, $value, $operator, true);
     }
@@ -52,7 +52,7 @@ abstract class ActiveRecordEntity
      * @return mixed
      * @throws DbException
      */
-    public static function where(string $param, string $value, string $operator = null): mixed
+    public static function where(string $param, string $value, ?string $operator = null): mixed
     {
         return static::search($param, $value, $operator);
     }
@@ -76,7 +76,23 @@ abstract class ActiveRecordEntity
      */
     public static function find(int $id): mixed
     {
-        return static::first("id", $id);
+        return static::firstWhere("id", $id);
+    }
+
+    /**
+     * @throws DbException
+     */
+    public static function first(): bool|array|null
+    {
+        return static::list("", [], 1);
+    }
+
+    /**
+     * @throws DbException
+     */
+    public static function last(): bool|array|null
+    {
+        return static::list("", [], 1, "DESC");
     }
 
     //TODO добавить forceDelete() и firstOrFail(), так же проверять чтобы возвращался не null
@@ -202,15 +218,27 @@ abstract class ActiveRecordEntity
     /**
      * @param string $filter
      * @param array $values
+     * @param int|null $limit
+     * @param string $orderBy
+     * @param string $sortedBy
      * @return array|bool|null
      * @throws DbException
      */
-    private static function list(string $filter = "", array $values = []): bool|array|null
+    private static function list(
+        string $filter = "",
+        array  $values = [],
+        int    $limit = null,
+        string $orderBy = "ASC",
+        string $sortedBy = "id"
+    ): bool|array|null
     {
         $sql = sprintf(
-            "/** @lang text */SELECT * FROM `%s`%s;",
+            "/** @lang text */SELECT * FROM `%s`%s ORDER BY `%s` %s%s;",
             static::table(),
-            $filter
+            $filter,
+            $sortedBy,
+            $orderBy,
+            $limit ? " LIMIT $limit" : ""
         );
 
         return static::getDB()->query($sql, $values, static::class);
