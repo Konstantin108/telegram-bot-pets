@@ -2,11 +2,11 @@
 
 namespace Project\Configuration;
 
-use Project\Traits\SingletonTrait;
+use Project\Traits\SingletonTrait as HasSingleton;
 
 class Config
 {
-    use SingletonTrait;
+    use HasSingleton;
 
     private Dotenv $dotenv;
     private array $configurations;
@@ -40,13 +40,13 @@ class Config
     }
 
     /**
-     * @return void|null
+     * @return void
      */
-    private function configuration()
+    private function configuration(): void
     {
         $path = __DIR__ . "/../../../config";
         if (count($configs = glob($path . "/*.php")) < 1) {
-            return null;
+            return;
         }
 
         foreach ($configs as $config) {
@@ -55,14 +55,14 @@ class Config
         }
     }
 
-
     /**
      * @param string $key
+     * @param string|int|float|null $defaultValue
      * @return mixed
      */
-    public static function get(string $key): mixed
+    public static function get(string $key, string|int|float|null $defaultValue = null): mixed
     {
-        return static::create()->getConfigParamByKey($key);
+        return static::create()->getConfigParamByKey($key) ?: $defaultValue;
     }
 
     /**

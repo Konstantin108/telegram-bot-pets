@@ -2,11 +2,11 @@
 
 namespace Project\Logger;
 
-use Project\Traits\SingletonTrait;
+use Project\Traits\SingletonTrait as HasSingleton;
 
 class Logger
 {
-    use SingletonTrait;
+    use HasSingleton;
 
     private bool $writeLog;
     private string $logFile;
@@ -21,24 +21,16 @@ class Logger
         $this->debugLogFile = $logSettings["debugLogFile"];
     }
 
-    //TODO возможно после изменения конфига сделать статичным класс Logger
-
-    /**
-     * @return Logger
-     */
-    public static function create(): Logger
-    {
-        return static::getInstance();
-    }
-
     /**
      * @param string $data
      * @return void
      */
-    public function log(string $data): void
+    public static function log(string $data): void
     {
-        if ($this->writeLog) {
-            $this->write($data, true, $this->logFile);
+        $logger = self::create();
+
+        if ($logger->isWriteLog()) {
+            $logger->write($data, true, $logger->logFile);
         }
     }
 
@@ -48,13 +40,32 @@ class Logger
      * @param bool $formatWithDate
      * @return void
      */
-    public function debug(
+    public static function debug(
         mixed   $data,
         ?string $path = null,
         bool    $formatWithDate = false
     ): void
     {
-        $this->write($data, $formatWithDate, $path ?? $this->debugLogFile);
+        $logger = self::create();
+        $logger->write($data, $formatWithDate, $path ?? $logger->debugLogFile);
+    }
+
+    //TODO возможно после изменения конфига сделать статичным класс Logger
+
+    /**
+     * @return Logger
+     */
+    private static function create(): Logger
+    {
+        return static::getInstance();
+    }
+
+    /**
+     * @return bool
+     */
+    private function isWriteLog(): bool
+    {
+        return $this->writeLog;
     }
 
     /**

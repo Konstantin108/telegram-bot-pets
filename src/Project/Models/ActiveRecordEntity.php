@@ -20,7 +20,7 @@ abstract class ActiveRecordEntity
      * @return void
      * @throws AccessModifiersException
      */
-    public function __set(string $name, string|null $value = "")
+    public function __set(string $name, string|null $value = ""): void
     {
         try {
             $camelCaseName = $this->underscoreToCamelCase($name);
@@ -29,6 +29,9 @@ abstract class ActiveRecordEntity
             throw new AccessModifiersException($error->getMessage());
         }
     }
+
+    //TODO нужно добавить пармаметр в который буду записывать полученные из базы данных
+    // возвращать буду данные из этого параметра в массиве или одним объектом
 
     /**
      * @param string $param
@@ -57,12 +60,13 @@ abstract class ActiveRecordEntity
     /**
      * @param string $param
      * @param string $value
+     * @param bool $getFirst
      * @return mixed
      * @throws DbException
      */
-    public static function like(string $param, string $value): mixed
+    public static function like(string $param, string $value, bool $getFirst = false): mixed
     {
-        return static::search($param, $value, OperatorEnum::LIKE->value);
+        return static::search($param, $value, OperatorEnum::LIKE->value, $getFirst);
     }
 
     /**
@@ -70,9 +74,33 @@ abstract class ActiveRecordEntity
      * @return mixed
      * @throws DbException
      */
-    public static function getById(int $id): mixed
+    public static function find(int $id): mixed
     {
         return static::first("id", $id);
+    }
+
+    //TODO добавить forceDelete() и firstOrFail(), так же проверять чтобы возвращался не null
+
+    /**
+     * @param string $param
+     * @param bool $getFirst
+     * @return mixed|null
+     * @throws DbException
+     */
+    public static function whereNull(string $param, bool $getFirst = false): mixed
+    {
+        return static::search($param, null, OperatorEnum::IS->value, $getFirst);
+    }
+
+    /**
+     * @param string $param
+     * @param bool $getFirst
+     * @return mixed
+     * @throws DbException
+     */
+    public static function whereNotNull(string $param, bool $getFirst = false): mixed
+    {
+        return static::search($param, null, OperatorEnum::IS_NOT->value, $getFirst);
     }
 
     /**
@@ -83,7 +111,7 @@ abstract class ActiveRecordEntity
      */
     public static function whereIn(string $param, array $values): bool|array|null
     {
-        return static::searchInArray($param, $values);
+        return static::searchIn($param, $values);
     }
 
     /**
@@ -94,7 +122,7 @@ abstract class ActiveRecordEntity
      */
     public static function whereNotIn(string $param, array $values): bool|array|null
     {
-        return static::searchInArray($param, $values, true);
+        return static::searchIn($param, $values, true);
     }
 
     /**
@@ -102,7 +130,7 @@ abstract class ActiveRecordEntity
      * @return array|bool|null
      * @throws DbException
      */
-    public static function filter(ScopeInterface ...$scopes): bool|array|null
+    public static function scoped(ScopeInterface ...$scopes): bool|array|null
     {
         $filter = " WHERE 1=1";
         $values = [];
@@ -132,15 +160,36 @@ abstract class ActiveRecordEntity
      */
     public function save(): void
     {
+        //TODO надо будет переделать save() и update() - будут разными методами
+        // не нужно чтобы каждый раз происходило обновление записи
         empty($this->id)
             ? $this->insert()
             : $this->update();
     }
 
     /**
+     * @return void
+     * @throws DbException
+     */
+    public function delete(): void
+    {
+        $sql = sprintf(
+            "/** @lang text */DELETE FROM `%s` WHERE `id` = :id",
+            static::table(),
+        );
+
+        static::getDB()->query($sql, ["id" => $this->id], static::class);
+    }
+
+    /**
      * @return string
      */
-    abstract protected static function getTableName(): string;
+    abstract protected static function table(): string;
+
+    /**
+     * @return array
+     */
+    abstract protected static function guarded(): array;
 
     /**
      * @return DB
@@ -160,7 +209,7 @@ abstract class ActiveRecordEntity
     {
         $sql = sprintf(
             "/** @lang text */SELECT * FROM `%s`%s;",
-            static::getTableName(),
+            static::table(),
             $filter
         );
 
@@ -169,17 +218,17 @@ abstract class ActiveRecordEntity
 
     /**
      * @param string $param
-     * @param string $value
+     * @param string|null $value
      * @param string|null $operator
      * @param bool $getFirst
      * @return mixed|null
      * @throws DbException
      */
-    private static function search(string $param, string $value, ?string $operator, bool $getFirst = false): mixed
+    private static function search(string $param, ?string $value, ?string $operator, bool $getFirst = false): mixed
     {
         $sql = sprintf(
             "/** @lang text */SELECT * FROM `%s` WHERE `%s` %s :%s;",
-            static::getTableName(),
+            static::table(),
             $param,
             $operator ?? OperatorEnum::EQ->value,
             $param
@@ -203,7 +252,7 @@ abstract class ActiveRecordEntity
      * @return bool|array|null
      * @throws DbException
      */
-    private static function searchInArray(string $param, array $values, bool $not = false): bool|array|null
+    private static function searchIn(string $param, array $values, bool $not = false): bool|array|null
     {
         $filter = sprintf(
             " WHERE `%s`%s IN (%s)",
@@ -222,6 +271,7 @@ abstract class ActiveRecordEntity
     private function insert(): void
     {
         $fields = $values = $columns = [];
+
         foreach ($this as $fieldName => $value) {
             if (is_null($value)) {
                 continue;
@@ -231,12 +281,14 @@ abstract class ActiveRecordEntity
             $values[$fieldName] = $value;
             $columns[] = "`$fieldName`";
         }
+
         $sql = sprintf(
             "/** @lang text */INSERT INTO `%s` (%s) VALUES (%s);",
-            static::getTableName(),
+            static::table(),
             implode(", ", $columns),
             implode(", ", $fields)
         );
+
         static::getDB()->query($sql, $values, static::class);
         $this->id = static::getDB()->getLastInsertId();
         $this->refresh();
@@ -246,9 +298,9 @@ abstract class ActiveRecordEntity
      * @return void
      * @throws DbException
      */
-    private function refresh(): void
+    protected function refresh(): void
     {
-        $objectFromDb = static::getById($this->id);
+        $objectFromDb = static::find($this->id);
         $reflector = new ReflectionObject($objectFromDb);
         $properties = $reflector->getProperties();
 
@@ -265,20 +317,25 @@ abstract class ActiveRecordEntity
     private function update(): void
     {
         $fields = $values = [];
+        $fieldId = "id";
+        $guarded = static::guarded();
+
         foreach ($this as $fieldName => $value) {
-            if ($fieldName === "id") {
+            if (in_array($fieldName, $guarded)) {
                 continue;
             }
             $fieldName = $this->camelCaseToUnderscore($fieldName);
             $fields[] = "`$fieldName` = :$fieldName";
             $values[$fieldName] = $value;
         }
+        $values[$fieldId] = $this->id;
 
         $sql = sprintf(
-            "/** @lang text */UPDATE `%s` SET %s WHERE `id` = %d;",
-            static::getTableName(),
+            "/** @lang text */UPDATE `%s` SET %s WHERE `%s` = :%s;",
+            static::table(),
             implode(", ", $fields),
-            $this->id
+            $fieldId,
+            $fieldId
         );
 
         static::getDB()->query($sql, $values, static::class);

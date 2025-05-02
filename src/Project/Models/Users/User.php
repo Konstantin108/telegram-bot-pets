@@ -4,9 +4,14 @@ namespace Project\Models\Users;
 
 use Project\Enums\User\UserStatusEnum;
 use Project\Models\ActiveRecordEntity;
+use Project\Traits\SoftDeletesTrait as HasSoftDeletes;
 
 class User extends ActiveRecordEntity
 {
+    use HasSoftDeletes;
+
+    private const string TABLE = "users";
+    private const array GUARDED = ["id"];
     protected int $id;
     protected string $chatId;
     protected bool|null $isBot;
@@ -121,8 +126,19 @@ class User extends ActiveRecordEntity
         return $this->lastName;
     }
 
-    protected static function getTableName(): string
+    /**
+     * @return string
+     */
+    protected static function table(): string
     {
-        return "users";
+        return static::TABLE;
+    }
+
+    /**
+     * @return array|string[]
+     */
+    protected static function guarded(): array
+    {
+        return static::GUARDED;
     }
 }

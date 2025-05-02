@@ -11,4 +11,6 @@ enum OperatorEnum: string
     case GE = ">=";
     case LE = "<=";
     case LIKE = "LIKE";
+    case IS = "IS";
+    case IS_NOT = "IS NOT";
 }

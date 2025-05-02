@@ -105,8 +105,8 @@ try {
         }
     } else {
         // массовое уведомление
-        if (count($users = User::filter(new TestMembersScope())) > 0) {
-//        if (count($users = User::filter(new MembersWithNotificationScope())) > 0) {
+        if (count($users = User::scoped(new TestMembersScope())) > 0) {
+//        if (count($users = User::scoped(new MembersWithNotificationScope())) > 0) {
             $dailyPhotoData = getImageForDailyNotification($allowExtensionsArray, $cats);
             foreach ($users as $user) {
                 /** @var User $user */
