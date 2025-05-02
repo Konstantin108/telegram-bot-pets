@@ -57,11 +57,12 @@ class Config
 
     /**
      * @param string $key
+     * @param string|int|float|null $defaultValue
      * @return mixed
      */
-    public static function get(string $key): mixed
+    public static function get(string $key, string|int|float|null $defaultValue = null): mixed
     {
-        return static::create()->getConfigParamByKey($key);
+        return static::create()->getConfigParamByKey($key) ?: $defaultValue;
     }
 
     /**

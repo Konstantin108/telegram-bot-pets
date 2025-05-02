@@ -60,12 +60,13 @@ abstract class ActiveRecordEntity
     /**
      * @param string $param
      * @param string $value
+     * @param bool $getFirst
      * @return mixed
      * @throws DbException
      */
-    public static function like(string $param, string $value): mixed
+    public static function like(string $param, string $value, bool $getFirst = false): mixed
     {
-        return static::search($param, $value, OperatorEnum::LIKE->value);
+        return static::search($param, $value, OperatorEnum::LIKE->value, $getFirst);
     }
 
     /**
@@ -82,22 +83,24 @@ abstract class ActiveRecordEntity
 
     /**
      * @param string $param
+     * @param bool $getFirst
      * @return mixed|null
      * @throws DbException
      */
-    public static function whereNull(string $param): mixed
+    public static function whereNull(string $param, bool $getFirst = false): mixed
     {
-        return static::search($param, null, OperatorEnum::IS->value);
+        return static::search($param, null, OperatorEnum::IS->value, $getFirst);
     }
 
     /**
      * @param string $param
+     * @param bool $getFirst
      * @return mixed
      * @throws DbException
      */
-    public static function whereNotNull(string $param): mixed
+    public static function whereNotNull(string $param, bool $getFirst = false): mixed
     {
-        return static::search($param, null, OperatorEnum::IS_NOT->value);
+        return static::search($param, null, OperatorEnum::IS_NOT->value, $getFirst);
     }
 
     /**
