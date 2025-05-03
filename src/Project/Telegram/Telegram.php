@@ -161,6 +161,7 @@ class Telegram
 
             if ($responseDto->errorCode->isBlocked()) {
                 $user = User::firstWhere("chat_id", $data["chat_id"]);
+                /** @var User $user */
                 $user->setStatus(UserStatusEnum::KICKED);
                 $user->save();
             }

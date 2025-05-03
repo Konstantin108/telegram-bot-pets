@@ -76,7 +76,7 @@ abstract class ActiveRecordEntity
      */
     public static function find(int $id): mixed
     {
-        return static::firstWhere("id", $id);
+        return static::firstWhere(static::primaryKey(), $id);
     }
 
     /**
@@ -189,12 +189,16 @@ abstract class ActiveRecordEntity
      */
     public function delete(): void
     {
+        $fieldId = static::primaryKey();
+
         $sql = sprintf(
-            "/** @lang text */DELETE FROM `%s` WHERE `id` = :id",
+            "/** @lang text */DELETE FROM `%s` WHERE `%s` = :%s;",
             static::table(),
+            $fieldId,
+            $fieldId
         );
 
-        static::getDB()->query($sql, ["id" => $this->id], static::class);
+        static::getDB()->query($sql, [$fieldId => $this->id], static::class);
     }
 
     /**
@@ -206,6 +210,11 @@ abstract class ActiveRecordEntity
      * @return array
      */
     abstract protected static function guarded(): array;
+
+    /**
+     * @return string
+     */
+    abstract protected static function primaryKey(): string;
 
     /**
      * @return DB
@@ -345,7 +354,7 @@ abstract class ActiveRecordEntity
     private function update(): void
     {
         $fields = $values = [];
-        $fieldId = "id";
+        $fieldId = static::primaryKey();
         $guarded = static::guarded();
 
         foreach ($this as $fieldName => $value) {

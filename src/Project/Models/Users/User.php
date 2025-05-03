@@ -12,6 +12,7 @@ class User extends ActiveRecordEntity
 
     private const string TABLE = "users";
     private const array GUARDED = ["id"];
+    private const string PRIMARY_KEY = "id";
     protected int $id;
     protected string $chatId;
     protected bool|null $isBot;
@@ -31,6 +32,7 @@ class User extends ActiveRecordEntity
 
     /**
      * @param string $chatId
+     * @return void
      */
     public function setChatId(string $chatId): void
     {
@@ -39,6 +41,7 @@ class User extends ActiveRecordEntity
 
     /**
      * @param bool|null $isBot
+     * @return void
      */
     public function setIsBot(?bool $isBot): void
     {
@@ -47,6 +50,7 @@ class User extends ActiveRecordEntity
 
     /**
      * @param string|null $firstName
+     * @return void
      */
     public function setFirstName(?string $firstName): void
     {
@@ -55,6 +59,7 @@ class User extends ActiveRecordEntity
 
     /**
      * @param string|null $lastName
+     * @return void
      */
     public function setLastName(?string $lastName): void
     {
@@ -63,6 +68,7 @@ class User extends ActiveRecordEntity
 
     /**
      * @param string|null $username
+     * @return void
      */
     public function setUsername(?string $username): void
     {
@@ -71,6 +77,7 @@ class User extends ActiveRecordEntity
 
     /**
      * @param bool $isAdmin
+     * @return void
      */
     public function setIsAdmin(bool $isAdmin): void
     {
@@ -79,6 +86,7 @@ class User extends ActiveRecordEntity
 
     /**
      * @param UserStatusEnum $status
+     * @return void
      */
     public function setStatus(UserStatusEnum $status): void
     {
@@ -87,6 +95,7 @@ class User extends ActiveRecordEntity
 
     /**
      * @param string|null $languageCode
+     * @return void
      */
     public function setLanguageCode(?string $languageCode): void
     {
@@ -140,5 +149,13 @@ class User extends ActiveRecordEntity
     protected static function guarded(): array
     {
         return static::GUARDED;
+    }
+
+    /**
+     * @return string
+     */
+    protected static function primaryKey(): string
+    {
+        return static::PRIMARY_KEY;
     }
 }
