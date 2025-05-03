@@ -2,13 +2,14 @@
 
 namespace Project\Traits;
 
+use Project\Dto\DB\SoftDeletesDto;
 use Project\Exceptions\DbException;
 use Project\Exceptions\DeletedAtPropertyNotExistsException;
+use Project\Scopes\SoftDeletingScope;
 
 trait SoftDeletesTrait
 {
     public const string DELETED_AT_PROPERTY = "deletedAt";
-    public const string DELETED_AT_FIELD = "deleted_at";
 
     //TODO доработать остальные методы ActiveRecordEntity с учетом SoftDeletesTrait
     // получение записей должно исключать те записи, у которых deleted_at не равен null
@@ -20,10 +21,12 @@ trait SoftDeletesTrait
 
     //TODO проверить почему какие-то уведомления срабатывают сами по себе
 
+    //TODO надо добавить onlyTrashed() и withTrashed()
+
     /**
      * @return void
-     * @throws DeletedAtPropertyNotExistsException
      * @throws DbException
+     * @throws DeletedAtPropertyNotExistsException
      */
     public function delete(): void
     {
@@ -31,30 +34,14 @@ trait SoftDeletesTrait
             throw DeletedAtPropertyNotExistsException::buildMessage(static::class, static::DELETED_AT_PROPERTY);
         }
 
-        $fieldId = static::primaryKey();
-        $fieldDeletedAt = static::DELETED_AT_FIELD;
-
-        $values = [
-            $fieldDeletedAt => date("Y-m-d H:i:s"),
-            $fieldId => $this->id,
-        ];
-
-        $sql = sprintf(
-            "/** @lang text */UPDATE `%s` SET `%s` = :%s WHERE `%s` = :%s;",
-            static::table(),
-            $fieldDeletedAt,
-            $fieldDeletedAt,
-            $fieldId,
-            $fieldId
-        );
-
-        static::getDB()->query($sql, $values, static::class);
-        $this->refresh();
+        $dateTime = date("Y-m-d H:i:s");
+        $this->setUpdatedAt($dateTime);
+        $this->setDeletedAt($dateTime);
+        $this->save();
     }
 
     //TODO мне надо везде добавить try catch
-
-    //TODO может ли этот метод удалить мягко удаленную запись
+    // сопоставить методы SoftDeletesTrait и ActiveRecordEntity по порядку
 
     /**
      * @return void
@@ -75,25 +62,9 @@ trait SoftDeletesTrait
             return;
         }
 
-        $fieldId = static::primaryKey();
-        $fieldDeletedAt = static::DELETED_AT_FIELD;
-
-        $values = [
-            $fieldDeletedAt => null,
-            $fieldId => $this->id,
-        ];
-
-        $sql = sprintf(
-            "/** @lang text */UPDATE `%s` SET `%s` = :%s WHERE `%s` = :%s;",
-            static::table(),
-            $fieldDeletedAt,
-            $fieldDeletedAt,
-            $fieldId,
-            $fieldId
-        );
-
-        static::getDB()->query($sql, $values, static::class);
-        $this->refresh();
+        $this->setUpdatedAt(date("Y-m-d H:i:s"));
+        $this->setDeletedAt(null);
+        $this->save();
     }
 
     /**
@@ -102,6 +73,26 @@ trait SoftDeletesTrait
     public function trashed(): bool
     {
         return !is_null($this->deletedAt);
+    }
+
+    /**
+     * @return SoftDeletesDto
+     */
+    protected static function softDeletes(): SoftDeletesDto
+    {
+        $scope = new SoftDeletingScope();
+        $filter = "";
+        $values = [];
+
+        foreach ($scope() as $paramDto) {
+            $filter .= " AND `$paramDto->column` $paramDto->operator :$paramDto->column";
+            $values[$paramDto->column] = $paramDto->value;
+        }
+
+        return new SoftDeletesDto(
+            filter: $filter,
+            values: $values
+        );
     }
 
     /**

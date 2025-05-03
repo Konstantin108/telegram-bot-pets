@@ -3,6 +3,7 @@
 namespace Project\Models;
 
 use Error;
+use Project\Dto\DB\SoftDeletesDto;
 use Project\Enums\DB\OperatorEnum;
 use Project\Exceptions\AccessModifiersException;
 use Project\Exceptions\DbException;
@@ -263,15 +264,22 @@ abstract class ActiveRecordEntity
      */
     private static function search(string $param, ?string $value, ?string $operator, bool $getFirst = false): mixed
     {
+        $softDeletes = static::softDeletes();
+        $values = [];
+
         $sql = sprintf(
-            "/** @lang text */SELECT * FROM `%s` WHERE `%s` %s :%s;",
+            "/** @lang text */SELECT * FROM `%s` WHERE `%s` %s :%s%s;",
             static::table(),
             $param,
             $operator ?? OperatorEnum::EQ->value,
-            $param
+            $param,
+            $softDeletes->filter
         );
 
-        $result = static::getDB()->query($sql, [$param => $value], static::class);
+        $values[$param] = $value;
+        $values = array_merge($values, $softDeletes->values);
+
+        $result = static::getDB()->query($sql, $values, static::class);
 
         if (!$getFirst) {
             return $result;
@@ -345,6 +353,14 @@ abstract class ActiveRecordEntity
             $propertyName = $property->getName();
             $this->$propertyName = $property->getValue($objectFromDb);
         }
+    }
+
+    /**
+     * @return SoftDeletesDto
+     */
+    protected static function softDeletes(): SoftDeletesDto
+    {
+        return new SoftDeletesDto();
     }
 
     /**

@@ -3,8 +3,8 @@
 namespace Project\Dto\Telegram\Request;
 
 use JetBrains\PhpStorm\ArrayShape;
-use Project\Dto\DtoInterface;
 use Project\Enums\User\UserStatusEnum;
+use Project\Interfaces\DtoInterface;
 
 class InputDataDto implements DtoInterface
 {

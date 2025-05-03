@@ -3,7 +3,7 @@
 namespace Project\Dto\Telegram\Request;
 
 use JetBrains\PhpStorm\ArrayShape;
-use Project\Dto\DtoInterface;
+use Project\Interfaces\DtoInterface;
 
 class FromDto implements DtoInterface
 {

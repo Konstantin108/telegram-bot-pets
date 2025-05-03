@@ -112,6 +112,15 @@ class User extends ActiveRecordEntity
     }
 
     /**
+     * @param string|null $deletedAt
+     * @return void
+     */
+    public function setDeletedAt(?string $deletedAt): void
+    {
+        $this->deletedAt = $deletedAt;
+    }
+
+    /**
      * @return string
      */
     public function getChatId(): string
@@ -125,14 +134,6 @@ class User extends ActiveRecordEntity
     public function getFirstName(): ?string
     {
         return $this->firstName;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getLastName(): ?string
-    {
-        return $this->lastName;
     }
 
     /**
