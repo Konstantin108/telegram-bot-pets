@@ -2,7 +2,6 @@
 
 namespace Project\Traits;
 
-use Project\Dto\DB\SoftDeletesDto;
 use Project\Exceptions\DbException;
 use Project\Exceptions\DeletedAtPropertyNotExistsException;
 use Project\Scopes\SoftDeletingScope;
@@ -13,15 +12,15 @@ trait SoftDeletesTrait
 
     //TODO доработать остальные методы ActiveRecordEntity с учетом SoftDeletesTrait
     // получение записей должно исключать те записи, у которых deleted_at не равен null
-    // возможно ли повторно мягкое удаление ???
-    // добавить restore() и forceDelete()
-    // forceDelete() возможно должен использовать delete() из самой модели
     // добавить withTrashed для работы с мягкоудаленными записями
-    // добавить scope для просмотра мягко удаленных заказов тоже
+    // добавить scope для просмотра мягко удаленных записей тоже
 
     //TODO проверить почему какие-то уведомления срабатывают сами по себе
 
     //TODO надо добавить onlyTrashed() и withTrashed()
+
+    //TODO добавить метод count() в ActiveRecordEntity
+    // count() так же будет восприимчив к softDeletes
 
     /**
      * @return void
@@ -76,22 +75,16 @@ trait SoftDeletesTrait
     }
 
     /**
-     * @return SoftDeletesDto
+     * @return string
      */
-    protected static function softDeletes(): SoftDeletesDto
+    protected static function softDeletes(): string
     {
         $scope = new SoftDeletingScope();
-        $filter = "";
-        $values = [];
 
-        foreach ($scope() as $paramDto) {
-            $filter .= " AND `$paramDto->column` $paramDto->operator :$paramDto->column";
-            $values[$paramDto->column] = $paramDto->value;
-        }
-
-        return new SoftDeletesDto(
-            filter: $filter,
-            values: $values
+        return array_reduce(
+            $scope(),
+            fn($carry, $paramDto) => " AND `$paramDto->column` $paramDto->operator $paramDto->value",
+            ""
         );
     }
 

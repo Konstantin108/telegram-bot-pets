@@ -6,7 +6,7 @@ use Project\Dto\DB\ScopeParamDto;
 
 class SoftDeletingScope extends AbstractScope
 {
-    private const null IS_DELETED_AT = null;
+    private const string DELETED_AT = "NULL";
 
     /**
      * @return array
@@ -16,7 +16,7 @@ class SoftDeletingScope extends AbstractScope
         return [
             new ScopeParamDto(
                 column: "deleted_at",
-                value: self::IS_DELETED_AT,
+                value: self::DELETED_AT,
                 operator: self::IS
             ),
         ];

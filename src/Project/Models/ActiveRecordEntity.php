@@ -3,7 +3,6 @@
 namespace Project\Models;
 
 use Error;
-use Project\Dto\DB\SoftDeletesDto;
 use Project\Enums\DB\OperatorEnum;
 use Project\Exceptions\AccessModifiersException;
 use Project\Exceptions\DbException;
@@ -149,8 +148,9 @@ abstract class ActiveRecordEntity
      */
     public static function scoped(ScopeInterface ...$scopes): bool|array|null
     {
-        $filter = " WHERE 1=1";
+        $filter = "";
         $values = [];
+
         if (count($scopes) > 0) {
             foreach ($scopes as $scope) {
                 foreach ($scope() as $paramDto) {
@@ -243,9 +243,10 @@ abstract class ActiveRecordEntity
     ): bool|array|null
     {
         $sql = sprintf(
-            "/** @lang text */SELECT * FROM `%s`%s ORDER BY `%s` %s%s;",
+            "/** @lang text */SELECT * FROM `%s` WHERE 1=1%s%s ORDER BY `%s` %s%s;",
             static::table(),
             $filter,
+            static::softDeletes(),
             $sortedBy,
             $orderBy,
             $limit ? " LIMIT $limit" : ""
@@ -262,24 +263,23 @@ abstract class ActiveRecordEntity
      * @return mixed|null
      * @throws DbException
      */
-    private static function search(string $param, ?string $value, ?string $operator, bool $getFirst = false): mixed
+    private static function search(
+        string  $param,
+        ?string $value,
+        ?string $operator,
+        bool    $getFirst = false
+    ): mixed
     {
-        $softDeletes = static::softDeletes();
-        $values = [];
-
         $sql = sprintf(
             "/** @lang text */SELECT * FROM `%s` WHERE `%s` %s :%s%s;",
             static::table(),
             $param,
             $operator ?? OperatorEnum::EQ->value,
             $param,
-            $softDeletes->filter
+            static::softDeletes()
         );
 
-        $values[$param] = $value;
-        $values = array_merge($values, $softDeletes->values);
-
-        $result = static::getDB()->query($sql, $values, static::class);
+        $result = static::getDB()->query($sql, [$param => $value], static::class);
 
         if (!$getFirst) {
             return $result;
@@ -300,7 +300,7 @@ abstract class ActiveRecordEntity
     private static function searchIn(string $param, array $values, bool $not = false): bool|array|null
     {
         $filter = sprintf(
-            " WHERE `%s`%s IN (%s)",
+            " AND `%s`%s IN (%s)",
             $param,
             $not ? " NOT" : "",
             rtrim(str_repeat("?, ", count($values)), ", ")
@@ -356,11 +356,11 @@ abstract class ActiveRecordEntity
     }
 
     /**
-     * @return SoftDeletesDto
+     * @return string
      */
-    protected static function softDeletes(): SoftDeletesDto
+    protected static function softDeletes(): string
     {
-        return new SoftDeletesDto();
+        return "";
     }
 
     /**

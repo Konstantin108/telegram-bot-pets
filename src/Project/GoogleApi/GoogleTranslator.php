@@ -38,7 +38,8 @@ class GoogleTranslator
 
         return array_reduce(
             array_shift($response),
-            fn($accumulator, $item) => $accumulator . $item[0]
+            fn($carry, $item) => $carry . $item[0],
+            ""
         );
     }
 
