@@ -10,6 +10,8 @@ use Project\Scopes\ScopeInterface;
 use Project\Services\Database\DB;
 use ReflectionObject;
 
+//TODO надо в свойство добавить экземпляр QueryBuilder
+
 abstract class ActiveRecordEntity
 {
     protected int $id;
@@ -40,7 +42,7 @@ abstract class ActiveRecordEntity
      * @return mixed
      * @throws DbException
      */
-    public static function first(string $param, string $value, string $operator = null): mixed
+    public static function firstWhere(string $param, string $value, ?string $operator = null): mixed
     {
         return static::search($param, $value, $operator, true);
     }
@@ -52,7 +54,7 @@ abstract class ActiveRecordEntity
      * @return mixed
      * @throws DbException
      */
-    public static function where(string $param, string $value, string $operator = null): mixed
+    public static function where(string $param, string $value, ?string $operator = null): mixed
     {
         return static::search($param, $value, $operator);
     }
@@ -76,7 +78,23 @@ abstract class ActiveRecordEntity
      */
     public static function find(int $id): mixed
     {
-        return static::first("id", $id);
+        return static::firstWhere(static::primaryKey(), $id);
+    }
+
+    /**
+     * @throws DbException
+     */
+    public static function first(): bool|array|null
+    {
+        return static::list("", [], 1);
+    }
+
+    /**
+     * @throws DbException
+     */
+    public static function last(): bool|array|null
+    {
+        return static::list("", [], 1, "DESC");
     }
 
     //TODO добавить forceDelete() и firstOrFail(), так же проверять чтобы возвращался не null
@@ -132,8 +150,9 @@ abstract class ActiveRecordEntity
      */
     public static function scoped(ScopeInterface ...$scopes): bool|array|null
     {
-        $filter = " WHERE 1=1";
+        $filter = "";
         $values = [];
+
         if (count($scopes) > 0) {
             foreach ($scopes as $scope) {
                 foreach ($scope() as $paramDto) {
@@ -173,12 +192,16 @@ abstract class ActiveRecordEntity
      */
     public function delete(): void
     {
+        $fieldId = static::primaryKey();
+
         $sql = sprintf(
-            "/** @lang text */DELETE FROM `%s` WHERE `id` = :id",
+            "/** @lang text */DELETE FROM `%s` WHERE `%s` = :%s;",
             static::table(),
+            $fieldId,
+            $fieldId
         );
 
-        static::getDB()->query($sql, ["id" => $this->id], static::class);
+        static::getDB()->query($sql, [$fieldId => $this->id], static::class);
     }
 
     /**
@@ -192,6 +215,11 @@ abstract class ActiveRecordEntity
     abstract protected static function guarded(): array;
 
     /**
+     * @return string
+     */
+    abstract protected static function primaryKey(): string;
+
+    /**
      * @return DB
      */
     protected static function getDB(): DB
@@ -202,15 +230,28 @@ abstract class ActiveRecordEntity
     /**
      * @param string $filter
      * @param array $values
+     * @param int|null $limit
+     * @param string $orderBy
+     * @param string $sortedBy
      * @return array|bool|null
      * @throws DbException
      */
-    private static function list(string $filter = "", array $values = []): bool|array|null
+    private static function list(
+        string $filter = "",
+        array  $values = [],
+        int    $limit = null,
+        string $orderBy = "ASC",
+        string $sortedBy = "id"
+    ): bool|array|null
     {
         $sql = sprintf(
-            "/** @lang text */SELECT * FROM `%s`%s;",
+            "/** @lang text */SELECT * FROM `%s` WHERE 1=1%s%s ORDER BY `%s` %s%s;",
             static::table(),
-            $filter
+            $filter,
+            static::softDeletes(),
+            $sortedBy,
+            $orderBy,
+            $limit ? " LIMIT $limit" : ""
         );
 
         return static::getDB()->query($sql, $values, static::class);
@@ -224,14 +265,20 @@ abstract class ActiveRecordEntity
      * @return mixed|null
      * @throws DbException
      */
-    private static function search(string $param, ?string $value, ?string $operator, bool $getFirst = false): mixed
+    private static function search(
+        string  $param,
+        ?string $value,
+        ?string $operator,
+        bool    $getFirst = false
+    ): mixed
     {
         $sql = sprintf(
-            "/** @lang text */SELECT * FROM `%s` WHERE `%s` %s :%s;",
+            "/** @lang text */SELECT * FROM `%s` WHERE `%s` %s :%s%s;",
             static::table(),
             $param,
             $operator ?? OperatorEnum::EQ->value,
-            $param
+            $param,
+            static::softDeletes()
         );
 
         $result = static::getDB()->query($sql, [$param => $value], static::class);
@@ -255,7 +302,7 @@ abstract class ActiveRecordEntity
     private static function searchIn(string $param, array $values, bool $not = false): bool|array|null
     {
         $filter = sprintf(
-            " WHERE `%s`%s IN (%s)",
+            " AND `%s`%s IN (%s)",
             $param,
             $not ? " NOT" : "",
             rtrim(str_repeat("?, ", count($values)), ", ")
@@ -311,13 +358,21 @@ abstract class ActiveRecordEntity
     }
 
     /**
+     * @return string
+     */
+    protected static function softDeletes(): string
+    {
+        return "";
+    }
+
+    /**
      * @return void
      * @throws DbException
      */
     private function update(): void
     {
         $fields = $values = [];
-        $fieldId = "id";
+        $fieldId = static::primaryKey();
         $guarded = static::guarded();
 
         foreach ($this as $fieldName => $value) {

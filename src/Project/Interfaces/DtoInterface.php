@@ -1,6 +1,6 @@
 <?php
 
-namespace Project\Dto;
+namespace Project\Interfaces;
 
 interface DtoInterface
 {

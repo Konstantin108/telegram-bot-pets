@@ -28,7 +28,7 @@ class UserController
     public function store(InputDataDto $inputDataDto): void
     {
         try {
-            if (is_null($user = User::first("chat_id", $inputDataDto->from->id))) {
+            if (is_null($user = User::firstWhere("chat_id", $inputDataDto->from->id))) {
                 $user = new User();
                 $user->setChatId($inputDataDto->from->id);
             }

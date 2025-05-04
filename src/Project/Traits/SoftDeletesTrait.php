@@ -4,6 +4,7 @@ namespace Project\Traits;
 
 use Project\Exceptions\DbException;
 use Project\Exceptions\DeletedAtPropertyNotExistsException;
+use Project\Scopes\SoftDeletingScope;
 
 trait SoftDeletesTrait
 {
@@ -11,18 +12,20 @@ trait SoftDeletesTrait
 
     //TODO доработать остальные методы ActiveRecordEntity с учетом SoftDeletesTrait
     // получение записей должно исключать те записи, у которых deleted_at не равен null
-    // возможно ли повторно мягкое удаление ???
-    // добавить restore() и forceDelete()
-    // forceDelete() возможно должен использовать delete() из самой модели
     // добавить withTrashed для работы с мягкоудаленными записями
-    // добавить scope для просмотра мягко удаленных заказов тоже
+    // добавить scope для просмотра мягко удаленных записей тоже
 
     //TODO проверить почему какие-то уведомления срабатывают сами по себе
 
+    //TODO надо добавить onlyTrashed() и withTrashed()
+
+    //TODO добавить метод count() в ActiveRecordEntity
+    // count() так же будет восприимчив к softDeletes
+
     /**
      * @return void
-     * @throws DeletedAtPropertyNotExistsException
      * @throws DbException
+     * @throws DeletedAtPropertyNotExistsException
      */
     public function delete(): void
     {
@@ -30,18 +33,59 @@ trait SoftDeletesTrait
             throw DeletedAtPropertyNotExistsException::buildMessage(static::class, static::DELETED_AT_PROPERTY);
         }
 
-        $values = [
-            "deleted_at" => date("Y-m-d H:i:s"),
-            "id" => $this->id,
-        ];
+        $dateTime = date("Y-m-d H:i:s");
+        $this->setUpdatedAt($dateTime);
+        $this->setDeletedAt($dateTime);
+        $this->save();
+    }
 
-        $sql = sprintf(
-            "/** @lang text */UPDATE `%s` SET `deleted_at` = :deleted_at WHERE `id` = :id",
-            static::table()
+    //TODO мне надо везде добавить try catch
+    // сопоставить методы SoftDeletesTrait и ActiveRecordEntity по порядку
+
+    /**
+     * @return void
+     * @throws DbException
+     */
+    public function forceDelete(): void
+    {
+        parent::delete();
+    }
+
+    /**
+     * @return void
+     * @throws DbException
+     */
+    public function restore(): void
+    {
+        if (!static::trashed()) {
+            return;
+        }
+
+        $this->setUpdatedAt(date("Y-m-d H:i:s"));
+        $this->setDeletedAt(null);
+        $this->save();
+    }
+
+    /**
+     * @return bool
+     */
+    public function trashed(): bool
+    {
+        return !is_null($this->deletedAt);
+    }
+
+    /**
+     * @return string
+     */
+    protected static function softDeletes(): string
+    {
+        $scope = new SoftDeletingScope();
+
+        return array_reduce(
+            $scope(),
+            fn($carry, $paramDto) => " AND `$paramDto->column` $paramDto->operator $paramDto->value",
+            ""
         );
-
-        static::getDB()->query($sql, $values, static::class);
-        $this->refresh();
     }
 
     /**

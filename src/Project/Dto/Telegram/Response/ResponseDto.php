@@ -3,8 +3,8 @@
 namespace Project\Dto\Telegram\Response;
 
 use JetBrains\PhpStorm\ArrayShape;
-use Project\Dto\DtoInterface;
 use Project\Enums\Telegram\ErrorCodeEnum;
+use Project\Interfaces\DtoInterface;
 
 class ResponseDto implements DtoInterface
 {
