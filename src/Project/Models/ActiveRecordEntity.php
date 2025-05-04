@@ -10,6 +10,8 @@ use Project\Scopes\ScopeInterface;
 use Project\Services\Database\DB;
 use ReflectionObject;
 
+//TODO надо в свойство добавить экземпляр QueryBuilder
+
 abstract class ActiveRecordEntity
 {
     protected int $id;
