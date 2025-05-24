@@ -160,11 +160,11 @@ function commandsList(FromDto $from, Telegram $telegram, array $replyMarkup): vo
  * @param string $chatId
  * @param Telegram $telegram
  * @param array $photoData
- * @param array|null $replyMarkup
+ * @param null|array $replyMarkup
  * @return void
  * @throws ConnException
  */
-function showCatImage(string $chatId, Telegram $telegram, array $photoData, null|array $replyMarkup = null): void
+function showCatImage(string $chatId, Telegram $telegram, array $photoData, ?array $replyMarkup = null): void
 {
     $replyMarkup ??= [
         "inline_keyboard" => [

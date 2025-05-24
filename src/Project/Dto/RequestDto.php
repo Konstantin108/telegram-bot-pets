@@ -2,9 +2,11 @@
 
 namespace Project\Dto;
 
+use JetBrains\PhpStorm\Immutable;
 use Project\Dto\Request\QueryParamsDto;
 use Project\Dto\Telegram\Request\InputDataDto;
 
+#[Immutable]
 class RequestDto
 {
     /**

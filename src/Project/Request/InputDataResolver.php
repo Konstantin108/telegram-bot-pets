@@ -9,6 +9,7 @@ use Project\Dto\Telegram\Request\InputDataDto;
 class InputDataResolver
 {
     protected const bool WITH_RAW = false;
+    //TODO это параметр WITH_RAW можно вынести в env
     protected const string DEFAULT_ROUTE = "test_notification";
     protected string|null $input;
     protected array $get;

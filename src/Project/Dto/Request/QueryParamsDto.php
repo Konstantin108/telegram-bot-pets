@@ -2,6 +2,9 @@
 
 namespace Project\Dto\Request;
 
+use JetBrains\PhpStorm\Immutable;
+
+#[Immutable]
 class QueryParamsDto
 {
     /**

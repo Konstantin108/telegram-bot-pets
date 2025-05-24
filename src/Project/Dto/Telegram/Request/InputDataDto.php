@@ -3,9 +3,11 @@
 namespace Project\Dto\Telegram\Request;
 
 use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Immutable;
 use Project\Enums\User\UserStatusEnum;
 use Project\Interfaces\DtoInterface;
 
+#[Immutable]
 class InputDataDto implements DtoInterface
 {
     /**

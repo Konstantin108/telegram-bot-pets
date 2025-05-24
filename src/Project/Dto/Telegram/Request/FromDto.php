@@ -3,12 +3,12 @@
 namespace Project\Dto\Telegram\Request;
 
 use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Immutable;
 use Project\Interfaces\DtoInterface;
 
+#[Immutable]
 class FromDto implements DtoInterface
 {
-    //TODO надо заменить синтаксис |null на ?
-
     /**
      * @param int $id
      * @param bool|null $isBot
@@ -18,12 +18,12 @@ class FromDto implements DtoInterface
      * @param string|null $languageCode
      */
     private function __construct(
-        public int         $id,
-        public bool|null   $isBot,
-        public string      $firstName,
-        public string|null $lastName,
-        public string      $username,
-        public string|null $languageCode
+        public int     $id,
+        public ?bool   $isBot,
+        public string  $firstName,
+        public ?string $lastName,
+        public string  $username,
+        public ?string $languageCode
     )
     {
     }

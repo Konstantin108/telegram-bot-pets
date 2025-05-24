@@ -3,9 +3,11 @@
 namespace Project\Dto\Telegram\Response;
 
 use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Immutable;
 use Project\Enums\Telegram\ErrorCodeEnum;
 use Project\Interfaces\DtoInterface;
 
+#[Immutable]
 class ResponseDto implements DtoInterface
 {
     /**

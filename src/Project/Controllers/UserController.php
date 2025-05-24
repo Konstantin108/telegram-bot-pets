@@ -36,7 +36,6 @@ class UserController
             $user->setFirstName($inputDataDto->from->firstName);
             $user->setLastName($inputDataDto->from->lastName);
             $user->setUsername($inputDataDto->from->username);
-            //TODO is_test и is_admin надо сделать значения по умолчанию
             $user->setIsAdmin(in_array($inputDataDto->from->id, $this->adminChatIds));
             $user->setStatus($inputDataDto->status);
             $user->setLanguageCode($inputDataDto->from->languageCode);

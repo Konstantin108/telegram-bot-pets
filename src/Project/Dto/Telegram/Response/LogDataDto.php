@@ -2,6 +2,9 @@
 
 namespace Project\Dto\Telegram\Response;
 
+use JetBrains\PhpStorm\Immutable;
+
+#[Immutable]
 class LogDataDto
 {
     /**

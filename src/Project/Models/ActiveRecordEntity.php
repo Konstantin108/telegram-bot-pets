@@ -30,7 +30,7 @@ abstract class ActiveRecordEntity
      * @return void
      * @throws AccessModifiersException
      */
-    public function __set(string $name, string|null $value = ""): void
+    public function __set(string $name, ?string $value = ""): void
     {
         try {
             $camelCaseName = $this->underscoreToCamelCase($name);
@@ -304,7 +304,7 @@ abstract class ActiveRecordEntity
     private static function list(
         string $filter = "",
         array  $values = [],
-        int    $limit = null,
+        ?int   $limit = null,
         string $orderBy = "ASC",
         string $sortedBy = "id"
     ): bool|array|null

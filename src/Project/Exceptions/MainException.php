@@ -5,6 +5,8 @@ namespace Project\Exceptions;
 use Exception;
 use Project\Logger\Logger;
 
+//TODO переработать исключения
+
 abstract class MainException extends Exception
 {
     public function __construct()

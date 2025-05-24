@@ -3,8 +3,10 @@
 namespace Project\Dto\Telegram\Request;
 
 use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Immutable;
 use Project\Interfaces\DtoInterface;
 
+#[Immutable]
 class ChatDto implements DtoInterface
 {
     /**
@@ -15,11 +17,11 @@ class ChatDto implements DtoInterface
      * @param string $type
      */
     private function __construct(
-        public int         $id,
-        public string      $firstName,
-        public string|null $lastName,
-        public string      $username,
-        public string      $type
+        public int     $id,
+        public string  $firstName,
+        public ?string $lastName,
+        public string  $username,
+        public string  $type
     )
     {
     }
