@@ -16,6 +16,7 @@ class InputDataResolver
 
     public function __construct()
     {
+        //TODO добавить валидацию через json_validate() и далее добавить свои правила для валидации
         $this->input = file_get_contents("php://input");
 //        $this->input = file_get_contents("../../bots/pets/message.json");
         $this->get = $_GET;

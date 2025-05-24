@@ -94,7 +94,7 @@ class Route
             routeName: $routeName,
             controllerName: $controllerName,
             actionName: $actionName,
-            allowedMethods: array_map(fn(mixed $method) => $method, $allowedMethods)
+            allowedMethods: array_map(fn(string $method) => $method, $allowedMethods)
         );
     }
 }

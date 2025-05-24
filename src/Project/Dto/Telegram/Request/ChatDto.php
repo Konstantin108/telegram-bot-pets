@@ -10,24 +10,24 @@ class ChatDto implements DtoInterface
     /**
      * @param int $id
      * @param string $firstName
-     * @param string $lastName
+     * @param string|null $lastName
      * @param string $username
      * @param string $type
      */
     private function __construct(
-        public int    $id,
-        public string $firstName,
-        public string $lastName,
-        public string $username,
-        public string $type
+        public int         $id,
+        public string      $firstName,
+        public string|null $lastName,
+        public string      $username,
+        public string      $type
     )
     {
     }
 
     /**
-     * @return array{id: int, firstName: string, lastName: string, username: string, type: string}
+     * @return array
      */
-    #[ArrayShape(shape: ["id" => "int", "firstName" => "string", "lastName" => "string", "username" => "string", "type" => "string"])]
+    #[ArrayShape(shape: ["id" => "int", "firstName" => "string", "lastName" => "null|string", "username" => "string", "type" => "string"])]
     public function toArray(): array
     {
         return [
@@ -48,7 +48,7 @@ class ChatDto implements DtoInterface
         return new self(
             id: (int)$data["id"],
             firstName: $data["first_name"],
-            lastName: $data["last_name"],
+            lastName: $data["last_name"] ?? null,
             username: $data["username"],
             type: $data["type"]
         );

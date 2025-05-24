@@ -57,6 +57,7 @@ try {
         $from = $inputDataDto->from;
 
         try {
+            //TODO возможно надо заменить на сервис
             (new UserController())->store($inputDataDto);
         } catch (TypeErrorException $exception) {
             $exception->show();
@@ -85,6 +86,7 @@ try {
 
                 if (!in_array($inputDataDto->from->id, $config["adminChatIds"])) {
                     foreach ($config["adminChatIds"] as $oneAdminChatId) {
+                        //TODO тут возможно нужны геттеры
                         $notifyForAdmin = "$from->firstName $from->lastName сейчас любуется {$cats[$inputDataDto->text]["ru_ins"]}"
                             . "\nПоказано это замечательное фото 🤩";
 

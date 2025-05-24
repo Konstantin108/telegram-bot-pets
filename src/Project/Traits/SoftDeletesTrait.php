@@ -2,6 +2,7 @@
 
 namespace Project\Traits;
 
+use Project\Dto\DB\ScopeParamDto;
 use Project\Exceptions\DbException;
 use Project\Exceptions\DeletedAtPropertyNotExistsException;
 use Project\Scopes\SoftDeletingScope;
@@ -83,7 +84,7 @@ trait SoftDeletesTrait
 
         return array_reduce(
             $scope(),
-            fn($carry, $paramDto) => " AND `$paramDto->column` $paramDto->operator $paramDto->value",
+            fn(string $carry, ScopeParamDto $paramDto) => " AND `$paramDto->column` $paramDto->operator $paramDto->value",
             ""
         );
     }

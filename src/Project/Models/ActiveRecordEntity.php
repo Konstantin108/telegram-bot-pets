@@ -6,15 +6,23 @@ use Error;
 use Project\Enums\DB\OperatorEnum;
 use Project\Exceptions\AccessModifiersException;
 use Project\Exceptions\DbException;
+use Project\Exceptions\ModelNotFoundException;
 use Project\Scopes\ScopeInterface;
 use Project\Services\Database\DB;
+use Project\Services\QueryBuilder\QueryBuilder;
 use ReflectionObject;
-
-//TODO надо в свойство добавить экземпляр QueryBuilder
 
 abstract class ActiveRecordEntity
 {
     protected int $id;
+
+    /**
+     * @return QueryBuilder
+     */
+    public static function query(): QueryBuilder
+    {
+        return new QueryBuilder(static::table(), static::class);
+    }
 
     /**
      * @param string $name
@@ -32,41 +40,38 @@ abstract class ActiveRecordEntity
         }
     }
 
-    //TODO нужно добавить пармаметр в который буду записывать полученные из базы данных
-    // возвращать буду данные из этого параметра в массиве или одним объектом
-
     /**
      * @param string $param
-     * @param string $value
+     * @param string|int $value
      * @param string|null $operator
      * @return mixed
      * @throws DbException
      */
-    public static function firstWhere(string $param, string $value, ?string $operator = null): mixed
+    public static function firstWhere(string $param, string|int $value, ?string $operator = null): mixed
     {
         return static::search($param, $value, $operator, true);
     }
 
     /**
      * @param string $param
-     * @param string $value
+     * @param string|int $value
      * @param string|null $operator
      * @return mixed
      * @throws DbException
      */
-    public static function where(string $param, string $value, ?string $operator = null): mixed
+    public static function where(string $param, string|int $value, ?string $operator = null): mixed
     {
         return static::search($param, $value, $operator);
     }
 
     /**
      * @param string $param
-     * @param string $value
+     * @param string|int $value
      * @param bool $getFirst
      * @return mixed
      * @throws DbException
      */
-    public static function like(string $param, string $value, bool $getFirst = false): mixed
+    public static function like(string $param, string|int $value, bool $getFirst = false): mixed
     {
         return static::search($param, $value, OperatorEnum::LIKE->value, $getFirst);
     }
@@ -82,11 +87,59 @@ abstract class ActiveRecordEntity
     }
 
     /**
+     * @param int $id
+     * @return void
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    public static function findOrFail(int $id): void
+    {
+        $result = static::firstWhere(static::primaryKey(), $id);
+
+        if (is_null($result)) {
+            throw ModelNotFoundException::buildMessage(static::class, $id);
+        }
+    }
+
+    //TODO методы, что принимают массив должны принимать и один объект
+
+    /**
+     * @param array $ids
+     * @return bool|array|null
      * @throws DbException
      */
-    public static function first(): bool|array|null
+    public static function findMany(array $ids): bool|array|null
     {
-        return static::list("", [], 1);
+        return static::searchIn(static::primaryKey(), $ids);
+    }
+
+    /**
+     * @return mixed|null
+     * @throws DbException
+     */
+    public static function first(): mixed
+    {
+        $result = static::list("", [], 1);
+
+        return count($result) > 0
+            ? array_shift($result)
+            : null;
+    }
+
+    /**
+     * @return mixed
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    public static function firstOrFail(): mixed
+    {
+        $result = static::list("", [], 1);
+
+        if (count($result) <= 0) {
+            throw ModelNotFoundException::buildMessage(static::class);
+        }
+
+        return array_shift($result);
     }
 
     /**
@@ -97,7 +150,7 @@ abstract class ActiveRecordEntity
         return static::list("", [], 1, "DESC");
     }
 
-    //TODO добавить forceDelete() и firstOrFail(), так же проверять чтобы возвращался не null
+    //TODO добавить forceDelete(), так же проверять чтобы возвращался не null
 
     /**
      * @param string $param
@@ -172,6 +225,18 @@ abstract class ActiveRecordEntity
     {
         return static::list();
     }
+
+    /**
+     * @return bool|array|null
+     * @throws DbException
+     */
+    public static function all2(): bool|array|null
+    {
+        return static::query()->list();
+    }
+
+    //TODO надо добавить методы select(), pluck(), keys()
+    // надо избавиться от 1=1
 
     /**
      * @return void
@@ -259,17 +324,17 @@ abstract class ActiveRecordEntity
 
     /**
      * @param string $param
-     * @param string|null $value
+     * @param string|int|null $value
      * @param string|null $operator
      * @param bool $getFirst
      * @return mixed|null
      * @throws DbException
      */
     private static function search(
-        string  $param,
-        ?string $value,
-        ?string $operator,
-        bool    $getFirst = false
+        string          $param,
+        null|string|int $value,
+        ?string         $operator,
+        bool            $getFirst = false
     ): mixed
     {
         $sql = sprintf(
@@ -337,7 +402,7 @@ abstract class ActiveRecordEntity
         );
 
         static::getDB()->query($sql, $values, static::class);
-        $this->id = static::getDB()->getLastInsertId();
+        $this->id = (int)static::getDB()->getLastInsertId();
         $this->refresh();
     }
 
@@ -347,13 +412,13 @@ abstract class ActiveRecordEntity
      */
     protected function refresh(): void
     {
-        $objectFromDb = static::find($this->id);
-        $reflector = new ReflectionObject($objectFromDb);
+        $objectFromDB = static::find($this->id);
+        $reflector = new ReflectionObject($objectFromDB);
         $properties = $reflector->getProperties();
 
         foreach ($properties as $property) {
             $propertyName = $property->getName();
-            $this->$propertyName = $property->getValue($objectFromDb);
+            $this->$propertyName = $property->getValue($objectFromDB);
         }
     }
 

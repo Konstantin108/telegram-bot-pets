@@ -39,6 +39,9 @@ class User extends ActiveRecordEntity
         $this->chatId = $chatId;
     }
 
+    //TODO у перезаписываемых методов можно добавить атрибут #[\Override]
+    // надо добавить и другие использования атрибутов
+
     /**
      * @param bool|null $isBot
      * @return void

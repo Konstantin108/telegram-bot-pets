@@ -7,6 +7,7 @@ use Project\Routing\Route;
 class MethodNotAllowedHttpException extends \Exception
 {
     //TODO мне еще надо код выбрасывать
+    // так же надо перехватывать исключения
 
     /**
      * @param string $requestMethod
@@ -16,7 +17,7 @@ class MethodNotAllowedHttpException extends \Exception
     public static function buildMessage(string $requestMethod, Route $route): MethodNotAllowedHttpException
     {
         return new self(sprintf(
-            "Роут \"%s\" не поддерживает метод %s. Поддерживаемые методы: %s.",
+            "Роут \"%s\" не поддерживает метод %s. Поддерживаемые методы: %s",
             $route->routeName,
             strtoupper($requestMethod),
             strtoupper(implode(", ", $route->allowedMethods))

@@ -7,11 +7,13 @@ use Project\Interfaces\DtoInterface;
 
 class FromDto implements DtoInterface
 {
+    //TODO надо заменить синтаксис |null на ?
+
     /**
      * @param int $id
      * @param bool|null $isBot
      * @param string $firstName
-     * @param string $lastName
+     * @param string|null $lastName
      * @param string $username
      * @param string|null $languageCode
      */
@@ -19,7 +21,7 @@ class FromDto implements DtoInterface
         public int         $id,
         public bool|null   $isBot,
         public string      $firstName,
-        public string      $lastName,
+        public string|null $lastName,
         public string      $username,
         public string|null $languageCode
     )
@@ -27,9 +29,9 @@ class FromDto implements DtoInterface
     }
 
     /**
-     * @return array{id: int, isBot: bool|null, firstName: string, lastName: string, username: string, languageCode: null|string}
+     * @return array
      */
-    #[ArrayShape(shape: ["id" => "int", "isBot" => "bool|null", "firstName" => "string", "lastName" => "string", "username" => "string", "languageCode" => "null|string"])]
+    #[ArrayShape(shape: ["id" => "int", "isBot" => "bool|null", "firstName" => "string", "lastName" => "null|string", "username" => "string", "languageCode" => "null|string"])]
     public function toArray(): array
     {
         return [
@@ -52,7 +54,7 @@ class FromDto implements DtoInterface
             id: (int)$data["id"],
             isBot: $data["is_bot"],
             firstName: $data["first_name"],
-            lastName: $data["last_name"],
+            lastName: $data["last_name"] ?? null,
             username: $data["username"],
             languageCode: $data["language_code"]
         );
