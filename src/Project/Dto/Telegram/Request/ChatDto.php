@@ -27,7 +27,7 @@ class ChatDto implements DtoInterface
     }
 
     /**
-     * @return array
+     * @return array{id: int, firstName: string, lastName: null|string, username: string, type: string}
      */
     #[ArrayShape(shape: ["id" => "int", "firstName" => "string", "lastName" => "null|string", "username" => "string", "type" => "string"])]
     public function toArray(): array

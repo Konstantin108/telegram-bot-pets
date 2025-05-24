@@ -29,7 +29,7 @@ class FromDto implements DtoInterface
     }
 
     /**
-     * @return array
+     * @return array{id: int, isBot: bool|null, firstName: string, lastName: null|string, username: string, languageCode: null|string}
      */
     #[ArrayShape(shape: ["id" => "int", "isBot" => "bool|null", "firstName" => "string", "lastName" => "null|string", "username" => "string", "languageCode" => "null|string"])]
     public function toArray(): array
